@@ -22,6 +22,9 @@ export async function POST(request: NextRequest) {
 		return NextResponse.json({ error: "Stripe webhook not configured" }, { status: 500 });
 	}
 
+	// Log webhook secret prefix for debugging (without exposing full secret)
+	console.log("🔑 Webhook secret configured:", webhookSecret.substring(0, 10) + "...");
+
 	const body = await request.text();
 	const signature = request.headers.get("stripe-signature");
 
@@ -29,6 +32,10 @@ export async function POST(request: NextRequest) {
 		console.error("❌ Missing stripe-signature header");
 		return NextResponse.json({ error: "Missing signature" }, { status: 400 });
 	}
+
+	console.log("📝 Signature header received:", signature.substring(0, 50) + "...");
+	console.log("📦 Body length:", body.length);
+	console.log("📦 Body preview:", body.substring(0, 200) + "...");
 
 	let event: Stripe.Event;
 
@@ -38,7 +45,14 @@ export async function POST(request: NextRequest) {
 		event = stripe.webhooks.constructEvent(body, signature, webhookSecret as string) as Stripe.Event;
 		console.log(`✅ Webhook verified: ${event.type}`);
 	} catch (error) {
-		console.error("❌ Webhook signature verification failed:", error);
+		console.error("❌ Webhook signature verification failed:");
+		if (error instanceof Error) {
+			console.error("  - Error type:", error.constructor.name);
+			console.error("  - Error message:", error.message);
+		}
+		console.error("  - Full error:", JSON.stringify(error, null, 2));
+		console.error("  - Webhook secret prefix:", webhookSecret.substring(0, 10) + "...");
+		console.error("  - Signature prefix:", signature.substring(0, 50) + "...");
 		return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
 	}
 
