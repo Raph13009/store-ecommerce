@@ -26,18 +26,41 @@ export function Footer() {
 					</div>
 
 					{/* Links */}
-					<div>
-						<h3 className="text-sm font-semibold text-foreground">Boutique</h3>
-						<ul className="mt-4 space-y-3">
-							<li>
-								<Link
-									href="/products"
-									className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-								>
-									Tous les produits
-								</Link>
-							</li>
-						</ul>
+					<div className="flex flex-col sm:flex-row gap-8 sm:gap-16">
+						<div>
+							<h3 className="text-sm font-semibold text-foreground">Boutique</h3>
+							<ul className="mt-4 space-y-3">
+								<li>
+									<Link
+										href="/products"
+										className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+									>
+										Tous les produits
+									</Link>
+								</li>
+							</ul>
+						</div>
+						<div>
+							<h3 className="text-sm font-semibold text-foreground">Informations</h3>
+							<ul className="mt-4 space-y-3">
+								<li>
+									<Link
+										href="/about"
+										className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+									>
+										À propos de Lola
+									</Link>
+								</li>
+								<li>
+									<Link
+										href="/returns"
+										className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+									>
+										Politique d'échange et de retour
+									</Link>
+								</li>
+							</ul>
+						</div>
 					</div>
 				</div>
 
