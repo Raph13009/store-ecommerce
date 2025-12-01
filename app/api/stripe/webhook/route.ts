@@ -3,6 +3,15 @@ import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe/client";
 import { createServerClient } from "@/lib/supabase/server";
 
+// GET endpoint to test if webhook is accessible
+export async function GET() {
+	return NextResponse.json({
+		message: "Webhook endpoint is accessible",
+		timestamp: new Date().toISOString(),
+		url: process.env.NEXT_PUBLIC_ROOT_URL || "unknown",
+	});
+}
+
 export async function POST(request: NextRequest) {
 	console.log("🔔 Webhook received");
 
@@ -93,16 +102,25 @@ export async function POST(request: NextRequest) {
 		}
 		console.log(`✅ Found ${items?.length ?? 0} cart items`);
 		if (items && items.length > 0) {
-			console.log("📦 Cart items details:", JSON.stringify(items.map(item => ({
-				id: item.id,
-				variant_id: item.variant_id,
-				quantity: item.quantity,
-				variant: item.variant ? {
-					id: (item.variant as any).id,
-					price: (item.variant as any).price,
-					name: (item.variant as any).name,
-				} : null,
-			})), null, 2));
+			console.log(
+				"📦 Cart items details:",
+				JSON.stringify(
+					items.map((item) => ({
+						id: item.id,
+						variant_id: item.variant_id,
+						quantity: item.quantity,
+						variant: item.variant
+							? {
+									id: (item.variant as any).id,
+									price: (item.variant as any).price,
+									name: (item.variant as any).name,
+								}
+							: null,
+					})),
+					null,
+					2,
+				),
+			);
 		}
 
 		// Calculate total
