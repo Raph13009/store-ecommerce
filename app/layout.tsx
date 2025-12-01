@@ -80,7 +80,7 @@ async function getInitialCart() {
 				quantity: item.quantity,
 				productVariant: {
 					id: item.variant.id,
-					price: typeof item.variant.price === "number" ? item.variant.price.toString() : item.variant.price,
+					price: typeof item.variant.price === "number" ? item.variant.price : Number(item.variant.price),
 					images: item.variant.images,
 					name: item.variant.name,
 					product: item.variant.product,
