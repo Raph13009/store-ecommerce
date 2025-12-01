@@ -4,7 +4,7 @@ import { getProducts } from "@/lib/products";
 
 export async function GET() {
 	"use cache";
-	cacheLife("minutes", 5); // Cache for 5 minutes
+	cacheLife("minutes");
 
 	try {
 		const products = await getProducts({ active: true, limit: 100 });

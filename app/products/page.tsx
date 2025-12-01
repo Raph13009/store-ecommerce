@@ -27,7 +27,7 @@ function ProductGridSkeleton() {
 
 async function ProductsList() {
 	"use cache";
-	cacheLife("minutes", 5); // Cache for 5 minutes
+	cacheLife("minutes");
 
 	const allProducts = await getProducts({ active: true, limit: 100 });
 
