@@ -9,6 +9,7 @@ import { CartButton } from "@/app/cart-button";
 import { Footer } from "@/app/footer";
 import { Navbar } from "@/app/navbar";
 import { getCart } from "@/lib/cart";
+import { PromotionalBanner } from "@/components/promotional-banner";
 import "@/app/globals.css";
 import { ShoppingCartIcon } from "lucide-react";
 
@@ -115,6 +116,7 @@ async function CartProviderWrapper({ children }: { children: React.ReactNode }) 
 	return (
 		<CartProvider initialCart={cart} initialCartId={cartId}>
 			<div className="flex min-h-screen flex-col">
+				<PromotionalBanner />
 				<header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
 					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 						<div className="flex items-center justify-between h-20 py-2">
