@@ -1,6 +1,17 @@
 import { supabase } from "@/lib/supabase/client";
 import type { Product, ProductVariant } from "@/lib/supabase/types";
 
+/**
+ * Check if a product is sold out (all variants have stock = 0)
+ */
+export function isProductSoldOut(variants: ProductVariant[]): boolean {
+	if (!variants || variants.length === 0) {
+		return true; // No variants = sold out
+	}
+	// Product is sold out if ALL variants have stock = 0
+	return variants.every((variant) => variant.stock === 0);
+}
+
 export async function getProducts(options?: {
 	limit?: number;
 	offset?: number;
@@ -56,18 +67,21 @@ export async function getProductBySlug(slug: string) {
 	`,
 		)
 		.eq("slug", slug)
+		.eq("active", true)
 		.single();
 
 	if (error || !data) {
 		return null;
 	}
 
-	// Block access to inactive products
-	if (!data.active) {
+	const product = data as Product & { variants: ProductVariant[] };
+
+	// Block access to sold-out products (all variants stock = 0)
+	if (isProductSoldOut(product.variants)) {
 		return null;
 	}
 
-	return data as Product & { variants: ProductVariant[] };
+	return product;
 }
 
 export async function getProductById(id: string) {

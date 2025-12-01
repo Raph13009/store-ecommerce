@@ -3,7 +3,7 @@ import { cacheLife } from "next/cache";
 import Image from "next/image";
 import Link from "next/link";
 import { formatPriceRangeWithOriginal, formatPriceWithOriginal } from "@/lib/price-display";
-import { getProducts } from "@/lib/products";
+import { getProducts, isProductSoldOut } from "@/lib/products";
 import type { Product, ProductVariant } from "@/lib/supabase/types";
 
 type ProductWithVariants = Product & { variants: ProductVariant[] };
@@ -28,7 +28,7 @@ export async function ProductGrid({
 	"use cache";
 	cacheLife("seconds");
 
-	const displayProducts = products ?? (await getProducts({ limit }));
+	const displayProducts = products ?? (await getProducts({ active: true, limit }));
 
 	return (
 		<section id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
@@ -66,10 +66,10 @@ export async function ProductGrid({
 					];
 					const primaryImage = allImages[0];
 					const secondaryImage = allImages[1];
-					const isActive = product.active;
+					const isSoldOut = isProductSoldOut(variants);
 
 					const productCard = (
-						<div className={isActive ? "group" : "opacity-60"}>
+						<div className={isSoldOut ? "opacity-60" : "group"}>
 							<div className="relative aspect-square bg-secondary rounded-2xl overflow-hidden mb-4">
 								{primaryImage && (
 									<Image
@@ -78,11 +78,11 @@ export async function ProductGrid({
 										fill
 										sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
 										className={`object-cover transition-all duration-500 ${
-											isActive ? "group-hover:brightness-110" : ""
+											isSoldOut ? "" : "group-hover:brightness-110"
 										}`}
 									/>
 								)}
-								{secondaryImage && isActive && (
+								{secondaryImage && !isSoldOut && (
 									<Image
 										src={secondaryImage}
 										alt={`${product.name} - vue alternative`}
@@ -91,7 +91,7 @@ export async function ProductGrid({
 										className="object-cover opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:brightness-110 absolute inset-0"
 									/>
 								)}
-								{!isActive && (
+								{isSoldOut && (
 									<div className="absolute inset-0 bg-background/40 flex items-center justify-center">
 										<span className="bg-background/90 text-foreground px-4 py-2 rounded-full text-xs font-medium tracking-wide">
 											Stock épuisé
@@ -100,28 +100,30 @@ export async function ProductGrid({
 								)}
 							</div>
 							<div className="space-y-1">
-								<h3 className={`text-base font-medium ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
+								<h3
+									className={`text-base font-medium ${isSoldOut ? "text-muted-foreground" : "text-foreground"}`}
+								>
 									{product.name}
 								</h3>
-								<div className={`text-base ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
+								<div className={`text-base ${isSoldOut ? "text-muted-foreground" : "text-foreground"}`}>
 									{priceDisplay}
 								</div>
 							</div>
 						</div>
 					);
 
-					if (isActive) {
+					if (isSoldOut) {
 						return (
-							<Link key={product.id} href={`/product/${product.slug}`}>
+							<div key={product.id} className="cursor-not-allowed">
 								{productCard}
-							</Link>
+							</div>
 						);
 					}
 
 					return (
-						<div key={product.id} className="cursor-not-allowed">
+						<Link key={product.id} href={`/product/${product.slug}`}>
 							{productCard}
-						</div>
+						</Link>
 					);
 				})}
 			</div>
