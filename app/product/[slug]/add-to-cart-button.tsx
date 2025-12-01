@@ -71,7 +71,9 @@ export function AddToCartButton({ variants, product }: AddToCartButtonProps) {
 					quantity,
 					productVariant: {
 						id: selectedVariant.id,
-						price: selectedVariant.price,
+						price: typeof selectedVariant.price === "number" 
+							? selectedVariant.price 
+							: Number.parseInt(String(selectedVariant.price), 10),
 						images: selectedVariant.images,
 						name: selectedVariant.name,
 						product,

@@ -77,15 +77,16 @@ async function getInitialCart() {
 		const transformedCart: Cart = {
 			id: cart.id,
 			lineItems: cart.items.map((item) => {
-				const price = typeof item.variant.price === "number" 
-					? item.variant.price 
-					: Number(item.variant.price);
-				
+				// Ensure price is a number (Supabase may return it as string)
+				const variantPrice = item.variant.price;
+				const priceNumber: number =
+					typeof variantPrice === "number" ? variantPrice : Number.parseInt(String(variantPrice), 10);
+
 				return {
 					quantity: item.quantity,
 					productVariant: {
 						id: item.variant.id,
-						price: price as number,
+						price: priceNumber,
 						images: item.variant.images,
 						name: item.variant.name,
 						product: item.variant.product,
