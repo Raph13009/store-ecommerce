@@ -28,7 +28,7 @@ export async function ProductGrid({
 	"use cache";
 	cacheLife("seconds");
 
-	const displayProducts = products ?? (await getProducts({ active: true, limit }));
+	const displayProducts = products ?? (await getProducts({ limit }));
 
 	return (
 		<section id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
@@ -66,9 +66,10 @@ export async function ProductGrid({
 					];
 					const primaryImage = allImages[0];
 					const secondaryImage = allImages[1];
+					const isActive = product.active;
 
-					return (
-						<Link key={product.id} href={`/product/${product.slug}`} className="group">
+					const productCard = (
+						<div className={isActive ? "group" : "opacity-60"}>
 							<div className="relative aspect-square bg-secondary rounded-2xl overflow-hidden mb-4">
 								{primaryImage && (
 									<Image
@@ -76,10 +77,12 @@ export async function ProductGrid({
 										alt={product.name}
 										fill
 										sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-										className="object-cover transition-all duration-500 group-hover:brightness-110"
+										className={`object-cover transition-all duration-500 ${
+											isActive ? "group-hover:brightness-110" : ""
+										}`}
 									/>
 								)}
-								{secondaryImage && (
+								{secondaryImage && isActive && (
 									<Image
 										src={secondaryImage}
 										alt={`${product.name} - vue alternative`}
@@ -88,12 +91,37 @@ export async function ProductGrid({
 										className="object-cover opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:brightness-110 absolute inset-0"
 									/>
 								)}
+								{!isActive && (
+									<div className="absolute inset-0 bg-background/40 flex items-center justify-center">
+										<span className="bg-background/90 text-foreground px-4 py-2 rounded-full text-xs font-medium tracking-wide">
+											Stock épuisé
+										</span>
+									</div>
+								)}
 							</div>
 							<div className="space-y-1">
-								<h3 className="text-base font-medium text-foreground">{product.name}</h3>
-								<div className="text-base text-foreground">{priceDisplay}</div>
+								<h3 className={`text-base font-medium ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
+									{product.name}
+								</h3>
+								<div className={`text-base ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
+									{priceDisplay}
+								</div>
 							</div>
-						</Link>
+						</div>
+					);
+
+					if (isActive) {
+						return (
+							<Link key={product.id} href={`/product/${product.slug}`}>
+								{productCard}
+							</Link>
+						);
+					}
+
+					return (
+						<div key={product.id} className="cursor-not-allowed">
+							{productCard}
+						</div>
 					);
 				})}
 			</div>

@@ -56,10 +56,14 @@ export async function getProductBySlug(slug: string) {
 	`,
 		)
 		.eq("slug", slug)
-		.eq("active", true)
 		.single();
 
 	if (error || !data) {
+		return null;
+	}
+
+	// Block access to inactive products
+	if (!data.active) {
 		return null;
 	}
 
