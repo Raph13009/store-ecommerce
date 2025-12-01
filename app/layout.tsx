@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
-import { type Cart, CartProvider } from "@/app/cart/cart-context";
+import { type Cart, type CartLineItem, CartProvider } from "@/app/cart/cart-context";
 import { CartSidebar } from "@/app/cart/cart-sidebar";
 import { CartButton } from "@/app/cart-button";
 import { Footer } from "@/app/footer";
@@ -76,20 +76,19 @@ async function getInitialCart() {
 		// Transform Supabase cart to Cart type expected by context
 		const transformedCart: Cart = {
 			id: cart.id,
-			lineItems: cart.items.map((item) => {
-				// Ensure price is a number (Supabase may return it as string)
-				const variantPrice = item.variant.price;
-				const priceNumber: number =
-					typeof variantPrice === "number" ? variantPrice : Number.parseInt(String(variantPrice), 10);
+			lineItems: cart.items.map((item): CartLineItem => {
+				const variant = item.variant;
+				// Force price to number - Supabase returns INTEGER as number, but TypeScript may infer string
+				const price = Number(variant.price);
 
 				return {
 					quantity: item.quantity,
 					productVariant: {
-						id: item.variant.id,
-						price: priceNumber,
-						images: item.variant.images,
-						name: item.variant.name,
-						product: item.variant.product,
+						id: variant.id,
+						price,
+						images: variant.images,
+						name: variant.name,
+						product: variant.product,
 					},
 				};
 			}),
