@@ -8,8 +8,8 @@ import { CartSidebar } from "@/app/cart/cart-sidebar";
 import { CartButton } from "@/app/cart-button";
 import { Footer } from "@/app/footer";
 import { Navbar } from "@/app/navbar";
-import { getCart } from "@/lib/cart";
 import { PromotionalBanner } from "@/components/promotional-banner";
+import { getCart } from "@/lib/cart";
 import "@/app/globals.css";
 import { ShoppingCartIcon } from "lucide-react";
 

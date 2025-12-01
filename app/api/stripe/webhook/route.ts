@@ -123,13 +123,13 @@ export async function POST(request: NextRequest) {
 						id: item.id,
 						variant_id: item.variant_id,
 						quantity: item.quantity,
-					variant: item.variant
-						? {
-								id: (item.variant as { id: string; price: number; name: string }).id,
-								price: (item.variant as { id: string; price: number; name: string }).price,
-								name: (item.variant as { id: string; price: number; name: string }).name,
-							}
-						: null,
+						variant: item.variant
+							? {
+									id: (item.variant as { id: string; price: number; name: string }).id,
+									price: (item.variant as { id: string; price: number; name: string }).price,
+									name: (item.variant as { id: string; price: number; name: string }).name,
+								}
+							: null,
 					})),
 					null,
 					2,
