@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export default function ReturnsPage() {
 	return (
@@ -20,9 +20,7 @@ export default function ReturnsPage() {
 				</div>
 
 				<div className="space-y-6 text-muted-foreground leading-relaxed">
-					<p>
-						Chez Lola, nous tenons à ce que chaque cliente se sente pleinement satisfaite de son bijou.
-					</p>
+					<p>Chez Lola, nous tenons à ce que chaque cliente se sente pleinement satisfaite de son bijou.</p>
 					<p>
 						Parce que l'achat d'une pièce est avant tout un choix personnel, nous mettons en place une
 						politique simple et transparente pour vous accompagner.
@@ -62,8 +60,8 @@ export default function ReturnsPage() {
 							Chaque bijou est sélectionné en petites quantités et fait partie d'une collection limitée.
 						</p>
 						<p className="text-muted-foreground leading-relaxed mt-4">
-							Nous mettons donc tout en œuvre pour trouver une solution adaptée, tout en préservant la
-							qualité et l'intégrité de notre stock.
+							Nous mettons donc tout en œuvre pour trouver une solution adaptée, tout en préservant la qualité
+							et l'intégrité de notre stock.
 						</p>
 					</div>
 
@@ -74,10 +72,7 @@ export default function ReturnsPage() {
 						</p>
 						<p className="text-foreground font-medium mt-4">
 							📧{" "}
-							<a
-								href="mailto:lolatalbon@gmail.com"
-								className="hover:underline text-foreground"
-							>
+							<a href="mailto:lolatalbon@gmail.com" className="hover:underline text-foreground">
 								lolatalbon@gmail.com
 							</a>
 						</p>
@@ -99,4 +94,3 @@ export default function ReturnsPage() {
 		</main>
 	);
 }
-

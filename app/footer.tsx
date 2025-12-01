@@ -47,17 +47,11 @@ export function Footer() {
 						&copy; {new Date().getFullYear()} La Maison de Lola. Tous droits réservés.
 					</p>
 					<div className="flex items-center gap-4 text-xs text-muted-foreground">
-						<Link
-							href="/about"
-							className="hover:text-foreground transition-colors"
-						>
+						<Link href="/about" className="hover:text-foreground transition-colors">
 							À propos
 						</Link>
 						<span className="text-border">•</span>
-						<Link
-							href="/returns"
-							className="hover:text-foreground transition-colors"
-						>
+						<Link href="/returns" className="hover:text-foreground transition-colors">
 							Échanges & retours
 						</Link>
 					</div>

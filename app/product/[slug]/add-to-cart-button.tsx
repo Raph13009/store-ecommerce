@@ -84,10 +84,10 @@ export function AddToCartButton({ variants, product }: AddToCartButtonProps) {
 			});
 
 			await addToCart(selectedVariant.id, quantity);
-			
+
 			// Refresh to sync cart from server
 			router.refresh();
-			
+
 			// Reset quantity after add
 			setQuantity(1);
 		});

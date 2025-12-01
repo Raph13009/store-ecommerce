@@ -1,10 +1,9 @@
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { AddToCartButton } from "@/app/product/[slug]/add-to-cart-button";
 import { ImageGallery } from "@/app/product/[slug]/image-gallery";
 import { ProductFeatures } from "@/app/product/[slug]/product-features";
+import { ProductMobileBackButton } from "@/components/product-mobile-back-button";
 import { formatPriceRangeWithOriginal, formatPriceWithOriginal } from "@/lib/price-display";
 import { getProductBySlug } from "@/lib/products";
 
@@ -41,14 +40,8 @@ const ProductDetails = async ({ params }: { params: Promise<{ slug: string }> })
 
 	return (
 		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-			{/* Back button - more visible on mobile */}
-			<Link
-				href="/products"
-				className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6 sm:mb-8 group"
-			>
-				<ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-				<span className="font-medium">Retour aux produits</span>
-			</Link>
+			{/* Mobile-only back button */}
+			<ProductMobileBackButton />
 
 			<div className="lg:grid lg:grid-cols-2 lg:gap-16">
 				{/* Left: Image Gallery (sticky on desktop) */}

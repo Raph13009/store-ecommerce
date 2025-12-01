@@ -8,7 +8,7 @@ export default async function CheckoutSuccessPage({
 }) {
 	const params = await searchParams;
 	const sessionId = params.session_id;
-	
+
 	console.log("✅ [SUCCESS] Checkout success page loaded");
 	console.log("✅ [SUCCESS] Session ID:", sessionId);
 
