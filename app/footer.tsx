@@ -22,7 +22,6 @@ export function Footer() {
 						<p className="mt-4 text-sm text-muted-foreground leading-relaxed">
 							Des pièces choisies avec attention, proposées en petites séries.
 							<br />
-							Sélection personnelle, en petites quantités et toujours soignée.
 						</p>
 					</div>
 
@@ -45,7 +44,7 @@ export function Footer() {
 				{/* Bottom bar */}
 				<div className="py-6 border-t border-border">
 					<p className="text-sm text-muted-foreground">
-						&copy; {new Date().getFullYear()} Votre Boutique. Tous droits réservés.
+						&copy; {new Date().getFullYear()} La Maison de Lola. Tous droits réservés.
 					</p>
 				</div>
 			</div>
