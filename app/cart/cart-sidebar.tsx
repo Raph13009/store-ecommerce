@@ -16,7 +16,7 @@ export function CartSidebar() {
 		console.log("🛒 [FRONTEND] Cart ID:", cartId);
 		console.log("🛒 [FRONTEND] Items count:", items.length);
 		console.log("🛒 [FRONTEND] Subtotal:", subtotal);
-		
+
 		try {
 			console.log("📡 [FRONTEND] Calling /api/stripe/checkout...");
 			const response = await fetch("/api/stripe/checkout", {
@@ -34,7 +34,7 @@ export function CartSidebar() {
 
 			const data = await response.json();
 			console.log("✅ [FRONTEND] Checkout response:", data);
-			
+
 			const { url } = data;
 			if (url) {
 				console.log("🔗 [FRONTEND] Redirecting to Stripe:", url);

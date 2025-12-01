@@ -5,7 +5,7 @@ import { createServerClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
 	console.log("🔔 Webhook received");
-	
+
 	const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 	if (!webhookSecret) {
@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
 			.from("orders")
 			.update({ status: "completed" })
 			.eq("stripe_payment_intent_id", paymentIntent.id);
-		
+
 		if (updateError) {
 			console.error("❌ Error updating order status:", updateError);
 		} else {

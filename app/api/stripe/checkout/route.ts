@@ -5,7 +5,7 @@ import { getStripe } from "@/lib/stripe/client";
 
 export async function POST(request: NextRequest) {
 	console.log("🛒 [CHECKOUT] Request received");
-	
+
 	try {
 		if (!process.env.STRIPE_SECRET_KEY) {
 			console.error("❌ [CHECKOUT] STRIPE_SECRET_KEY not configured");
