@@ -2,13 +2,16 @@ import { supabase } from "@/lib/supabase/client";
 import type { Product, ProductVariant } from "@/lib/supabase/types";
 
 /**
- * Check if a product is sold out (all variants have stock = 0)
+ * Check if a product is sold out
+ * A product is sold out ONLY if ALL variants have stock = 0
+ * If at least one variant has stock > 0, the product is available
  */
 export function isProductSoldOut(variants: ProductVariant[]): boolean {
 	if (!variants || variants.length === 0) {
 		return true; // No variants = sold out
 	}
-	// Product is sold out if ALL variants have stock = 0
+	// Product is sold out ONLY if ALL variants have stock = 0
+	// If at least one variant has stock > 0, return false (product is available)
 	return variants.every((variant) => variant.stock === 0);
 }
 
