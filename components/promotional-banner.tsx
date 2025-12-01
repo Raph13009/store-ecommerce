@@ -10,17 +10,11 @@ type PromotionalBannerProps = {
  * Calculate discount percentage based on the pricing logic
  * If original price is 60% higher than current price:
  * - Original = Current * 1.60
- * - Discount = Original - Current = Current * 0.60
- * - Discount % = (0.60 / 1.60) * 100 = 37.5%
+ * - The discount displayed is up to 60% off the original price
  */
 function calculateDiscountPercentage(): number {
-	// Based on calculateOriginalPrice: original = current * 1.60
-	// Discount = (original - current) / original * 100
-	// = (current * 1.60 - current) / (current * 1.60) * 100
-	// = (current * 0.60) / (current * 1.60) * 100
-	// = 0.60 / 1.60 * 100
-	// = 37.5%
-	return 37.5;
+	// The promotion goes up to 60% discount
+	return 60;
 }
 
 export function PromotionalBanner({ discountPercentage }: PromotionalBannerProps) {
@@ -51,4 +45,3 @@ export function PromotionalBanner({ discountPercentage }: PromotionalBannerProps
 		</div>
 	);
 }
-
