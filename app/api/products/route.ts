@@ -1,11 +1,7 @@
-import { cacheLife } from "next/cache";
 import { NextResponse } from "next/server";
 import { getProducts } from "@/lib/products";
 
 export async function GET() {
-	"use cache";
-	cacheLife("minutes");
-
 	try {
 		const products = await getProducts({ active: true, limit: 100 });
 		return NextResponse.json(products, {
