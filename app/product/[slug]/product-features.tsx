@@ -13,13 +13,11 @@ type ProductFeaturesProps = {
 const defaultFeatures: Feature[] = [
 	{
 		title: "Petites séries",
-		description:
-			"Chaque bijou est proposé en quantité limitée pour garantir exclusivité et qualité.",
+		description: "Chaque bijou est proposé en quantité limitée pour garantir exclusivité et qualité.",
 	},
 	{
 		title: "Sélection soignée",
-		description:
-			"Chaque pièce est choisie une par une dans la collection personnelle.",
+		description: "Chaque pièce est choisie une par une dans la collection personnelle.",
 	},
 	{
 		title: "Qualité vérifiée",
