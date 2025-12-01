@@ -85,8 +85,8 @@ export async function getProductBySlug(slug: string) {
 }
 
 export async function getProductById(id: string) {
-	// Use server-side Supabase for better performance and caching
-	const supabaseClient = await createServerClient();
+	// Use client-side Supabase for public product queries (no cookies needed)
+	const supabaseClient = supabase;
 
 	const { data, error } = await supabaseClient
 		.from("products")
