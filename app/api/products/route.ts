@@ -4,7 +4,9 @@ import { getProducts } from "@/lib/products";
 export async function GET() {
 	try {
 		const products = await getProducts({ active: true, limit: 100 });
-		return NextResponse.json(products, {
+		// Ensure data is properly serialized (Supabase returns plain objects, but we ensure JSON serialization)
+		const serializedProducts = JSON.parse(JSON.stringify(products));
+		return NextResponse.json(serializedProducts, {
 			headers: {
 				"Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
 			},
