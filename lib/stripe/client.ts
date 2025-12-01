@@ -1,10 +1,24 @@
 import Stripe from "stripe";
 
-if (!process.env.STRIPE_SECRET_KEY) {
-	throw new Error("Missing STRIPE_SECRET_KEY environment variable");
+let stripeInstance: Stripe | null = null;
+
+export function getStripe(): Stripe {
+	if (!stripeInstance) {
+		const secretKey = process.env.STRIPE_SECRET_KEY;
+		if (!secretKey) {
+			throw new Error("Missing STRIPE_SECRET_KEY environment variable");
+		}
+		stripeInstance = new Stripe(secretKey, {
+			apiVersion: "2024-12-18.acacia",
+			typescript: true,
+		});
+	}
+	return stripeInstance;
 }
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-	apiVersion: "2024-12-18.acacia",
-	typescript: true,
+// Export for backward compatibility (lazy initialization)
+export const stripe = new Proxy({} as Stripe, {
+	get(_target, prop) {
+		return getStripe()[prop as keyof Stripe];
+	},
 });

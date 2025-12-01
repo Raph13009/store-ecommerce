@@ -1,15 +1,15 @@
 import { type NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
-import { stripe } from "@/lib/stripe/client";
+import { getStripe } from "@/lib/stripe/client";
 import { createServerClient } from "@/lib/supabase/server";
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-if (!webhookSecret) {
-	throw new Error("Missing STRIPE_WEBHOOK_SECRET environment variable");
-}
-
 export async function POST(request: NextRequest) {
+	const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+	if (!webhookSecret) {
+		return NextResponse.json({ error: "Stripe webhook not configured" }, { status: 500 });
+	}
+
 	const body = await request.text();
 	const signature = request.headers.get("stripe-signature");
 
@@ -20,6 +20,7 @@ export async function POST(request: NextRequest) {
 	let event: Stripe.Event;
 
 	try {
+		const stripe = getStripe();
 		event = stripe.webhooks.constructEvent(body, signature, webhookSecret) as Stripe.Event;
 	} catch (error) {
 		console.error("Webhook signature verification failed:", error);

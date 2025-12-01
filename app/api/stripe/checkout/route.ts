@@ -1,10 +1,14 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { getCart } from "@/lib/cart";
-import { stripe } from "@/lib/stripe/client";
+import { getStripe } from "@/lib/stripe/client";
 
 export async function POST(request: NextRequest) {
 	try {
+		if (!process.env.STRIPE_SECRET_KEY) {
+			return NextResponse.json({ error: "Stripe not configured" }, { status: 500 });
+		}
+
 		const cart = await getCart();
 
 		if (!cart || cart.items.length === 0) {
@@ -17,6 +21,8 @@ export async function POST(request: NextRequest) {
 		if (total <= 0) {
 			return NextResponse.json({ error: "Invalid cart total" }, { status: 400 });
 		}
+
+		const stripe = getStripe();
 
 		// Create Stripe checkout session
 		const session = await stripe.checkout.sessions.create({
