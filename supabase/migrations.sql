@@ -92,6 +92,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Drop existing triggers if they exist (to allow re-running this script)
+DROP TRIGGER IF EXISTS update_products_updated_at ON products;
+DROP TRIGGER IF EXISTS update_product_variants_updated_at ON product_variants;
+DROP TRIGGER IF EXISTS update_carts_updated_at ON carts;
+DROP TRIGGER IF EXISTS update_cart_items_updated_at ON cart_items;
+DROP TRIGGER IF EXISTS update_orders_updated_at ON orders;
+
 -- Triggers to auto-update updated_at
 CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products
 	FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -115,6 +122,18 @@ ALTER TABLE carts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cart_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist (to allow re-running this script)
+DROP POLICY IF EXISTS "Public can view active products" ON products;
+DROP POLICY IF EXISTS "Public can view product variants" ON product_variants;
+DROP POLICY IF EXISTS "Public can create carts" ON carts;
+DROP POLICY IF EXISTS "Public can view their own carts" ON carts;
+DROP POLICY IF EXISTS "Public can update their own carts" ON carts;
+DROP POLICY IF EXISTS "Public can manage cart items" ON cart_items;
+DROP POLICY IF EXISTS "Public can create orders" ON orders;
+DROP POLICY IF EXISTS "Public can view their own orders" ON orders;
+DROP POLICY IF EXISTS "Public can create order items" ON order_items;
+DROP POLICY IF EXISTS "Public can view order items" ON order_items;
 
 -- Allow public read access to active products
 CREATE POLICY "Public can view active products" ON products
