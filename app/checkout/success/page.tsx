@@ -8,6 +8,9 @@ export default async function CheckoutSuccessPage({
 }) {
 	const params = await searchParams;
 	const sessionId = params.session_id;
+	
+	console.log("✅ [SUCCESS] Checkout success page loaded");
+	console.log("✅ [SUCCESS] Session ID:", sessionId);
 
 	return (
 		<main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

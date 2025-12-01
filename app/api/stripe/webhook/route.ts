@@ -40,13 +40,22 @@ export async function POST(request: NextRequest) {
 		console.log("🛒 Processing checkout.session.completed");
 		const session = event.data.object;
 
+		console.log("📋 [WEBHOOK] Session details:");
+		console.log("  - Session ID:", session.id);
+		console.log("  - Payment Intent:", session.payment_intent);
+		console.log("  - Customer Email:", session.customer_email);
+		console.log("  - Customer Details:", session.customer_details);
+		console.log("  - Shipping Details:", session.shipping_details);
+		console.log("  - Metadata:", session.metadata);
+
 		// Get cart from metadata
 		const cartId = session.metadata?.cart_id;
 		if (!cartId) {
 			console.error("❌ No cart_id in session metadata");
+			console.error("❌ Available metadata keys:", Object.keys(session.metadata || {}));
 			return NextResponse.json({ error: "Missing cart_id" }, { status: 400 });
 		}
-		console.log(`📦 Cart ID: ${cartId}`);
+		console.log(`📦 Cart ID from metadata: ${cartId}`);
 
 		// Get cart with items directly from Supabase
 		const { data: cart, error: cartError } = await supabase

@@ -12,21 +12,43 @@ export function CartSidebar() {
 	const { isOpen, closeCart, items, itemCount, subtotal, cartId } = useCart();
 
 	const handleCheckout = async () => {
+		console.log("🛒 [FRONTEND] Checkout button clicked");
+		console.log("🛒 [FRONTEND] Cart ID:", cartId);
+		console.log("🛒 [FRONTEND] Items count:", items.length);
+		console.log("🛒 [FRONTEND] Subtotal:", subtotal);
+		
 		try {
+			console.log("📡 [FRONTEND] Calling /api/stripe/checkout...");
 			const response = await fetch("/api/stripe/checkout", {
 				method: "POST",
 			});
 
+			console.log("📡 [FRONTEND] Response status:", response.status);
+			console.log("📡 [FRONTEND] Response ok:", response.ok);
+
 			if (!response.ok) {
-				throw new Error("Failed to create checkout session");
+				const errorText = await response.text();
+				console.error("❌ [FRONTEND] Checkout failed:", errorText);
+				throw new Error(`Failed to create checkout session: ${errorText}`);
 			}
 
-			const { url } = await response.json();
+			const data = await response.json();
+			console.log("✅ [FRONTEND] Checkout response:", data);
+			
+			const { url } = data;
 			if (url) {
+				console.log("🔗 [FRONTEND] Redirecting to Stripe:", url);
 				window.location.href = url;
+			} else {
+				console.error("❌ [FRONTEND] No URL in response:", data);
 			}
 		} catch (error) {
-			console.error("Checkout error:", error);
+			console.error("❌ [FRONTEND] Checkout error:", error);
+			if (error instanceof Error) {
+				console.error("❌ [FRONTEND] Error message:", error.message);
+				console.error("❌ [FRONTEND] Error stack:", error.stack);
+			}
+			alert("Erreur lors de la création de la session de paiement. Veuillez réessayer.");
 		}
 	};
 
