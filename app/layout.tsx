@@ -76,16 +76,22 @@ async function getInitialCart() {
 		// Transform Supabase cart to Cart type expected by context
 		const transformedCart: Cart = {
 			id: cart.id,
-			lineItems: cart.items.map((item) => ({
-				quantity: item.quantity,
-				productVariant: {
-					id: item.variant.id,
-					price: typeof item.variant.price === "number" ? item.variant.price : Number(item.variant.price),
-					images: item.variant.images,
-					name: item.variant.name,
-					product: item.variant.product,
-				},
-			})),
+			lineItems: cart.items.map((item) => {
+				const price = typeof item.variant.price === "number" 
+					? item.variant.price 
+					: Number(item.variant.price);
+				
+				return {
+					quantity: item.quantity,
+					productVariant: {
+						id: item.variant.id,
+						price: price as number,
+						images: item.variant.images,
+						name: item.variant.name,
+						product: item.variant.product,
+					},
+				};
+			}),
 		};
 
 		return { cart: transformedCart, cartId: cart.id };
