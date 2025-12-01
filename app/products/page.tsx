@@ -1,7 +1,11 @@
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { cacheLife } from "next/cache";
 import { Suspense } from "react";
-import { ProductsListClient } from "./products-list-client";
+import { ProductCategoryFilters } from "@/components/product-category-filters";
+import { ProductGridClient } from "@/components/sections/product-grid-client";
+import { getProducts } from "@/lib/products";
+import type { Product, ProductVariant } from "@/lib/supabase/types";
+
+type ProductWithVariants = Product & { variants: ProductVariant[] };
 
 function ProductGridSkeleton() {
 	return (
@@ -19,20 +23,27 @@ function ProductGridSkeleton() {
 	);
 }
 
-export default function ProductsPage() {
+async function ProductsList() {
+	"use cache";
+	cacheLife("minutes", 5); // Cache for 5 minutes
+
+	const allProducts = await getProducts({ active: true, limit: 100 });
+
+	return (
+		<>
+			<ProductCategoryFilters products={allProducts} />
+			<ProductGridClient products={allProducts} />
+		</>
+	);
+}
+
+export default async function ProductsPage() {
 	return (
 		<main>
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-				<Link
-					href="/"
-					className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6 group"
-				>
-					<ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-					<span>Retour à l'accueil</span>
-				</Link>
 				<h1 className="text-3xl font-medium tracking-tight mb-8">Tous les produits</h1>
 				<Suspense fallback={<ProductGridSkeleton />}>
-					<ProductsListClient />
+					<ProductsList />
 				</Suspense>
 			</div>
 		</main>

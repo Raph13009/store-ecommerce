@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatPriceRangeWithOriginal, formatPriceWithOriginal } from "@/lib/price-display";
@@ -12,7 +13,22 @@ type ProductGridClientProps = {
 	products: ProductWithVariants[];
 };
 
-export function ProductGridClient({ products }: ProductGridClientProps) {
+export function ProductGridClient({ products: initialProducts }: ProductGridClientProps) {
+	const [products, setProducts] = useState(initialProducts);
+
+	useEffect(() => {
+		// Listen for filter changes
+		const handleFilter = (event: CustomEvent<ProductWithVariants[]>) => {
+			setProducts(event.detail);
+		};
+
+		window.addEventListener("productsFiltered", handleFilter as EventListener);
+
+		return () => {
+			window.removeEventListener("productsFiltered", handleFilter as EventListener);
+		};
+	}, []);
+
 	return (
 		<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 			{products.map((product) => {
@@ -46,6 +62,7 @@ export function ProductGridClient({ products }: ProductGridClientProps) {
 									className={`object-cover transition-all duration-500 ${
 										isSoldOut ? "" : "group-hover:brightness-110"
 									}`}
+									loading="lazy"
 								/>
 							)}
 							{secondaryImage && !isSoldOut && (
@@ -55,6 +72,7 @@ export function ProductGridClient({ products }: ProductGridClientProps) {
 									fill
 									sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
 									className="object-cover opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:brightness-110 absolute inset-0"
+									loading="lazy"
 								/>
 							)}
 							{isSoldOut && (

@@ -1,17 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CATEGORIES, getProductCategory, type ProductCategory } from "@/lib/product-categories";
+import { getProductCategory, type ProductCategory } from "@/lib/product-categories";
 import type { Product, ProductVariant } from "@/lib/supabase/types";
 
 type ProductWithVariants = Product & { variants: ProductVariant[] };
 
 type ProductCategoryFiltersProps = {
 	products: ProductWithVariants[];
-	onFilterChange: (filteredProducts: ProductWithVariants[]) => void;
 };
 
-export function ProductCategoryFilters({ products, onFilterChange }: ProductCategoryFiltersProps) {
+export function ProductCategoryFilters({ products }: ProductCategoryFiltersProps) {
 	const [selectedCategory, setSelectedCategory] = useState<ProductCategory>(null);
 
 	const filteredProducts = useMemo(() => {
@@ -24,11 +23,6 @@ export function ProductCategoryFilters({ products, onFilterChange }: ProductCate
 			return category === selectedCategory;
 		});
 	}, [products, selectedCategory]);
-
-	// Update parent when filtered products change
-	useEffect(() => {
-		onFilterChange(filteredProducts);
-	}, [filteredProducts, onFilterChange]);
 
 	const handleCategoryClick = (category: ProductCategory) => {
 		setSelectedCategory(category === selectedCategory ? null : category);
@@ -46,6 +40,13 @@ export function ProductCategoryFilters({ products, onFilterChange }: ProductCate
 		return Array.from(categories).sort();
 	}, [products]);
 
+	// Update the grid when filter changes
+	useEffect(() => {
+		// Dispatch custom event to update grid
+		const event = new CustomEvent("productsFiltered", { detail: filteredProducts });
+		window.dispatchEvent(event);
+	}, [filteredProducts]);
+
 	if (availableCategories.length === 0) {
 		return null;
 	}
@@ -54,6 +55,7 @@ export function ProductCategoryFilters({ products, onFilterChange }: ProductCate
 		<div className="mb-8">
 			<div className="flex items-center gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible sm:flex-wrap">
 				<button
+					type="button"
 					onClick={() => handleCategoryClick(null)}
 					className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
 						selectedCategory === null
@@ -66,6 +68,7 @@ export function ProductCategoryFilters({ products, onFilterChange }: ProductCate
 				{availableCategories.map((category) => (
 					<button
 						key={category}
+						type="button"
 						onClick={() => handleCategoryClick(category)}
 						className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
 							selectedCategory === category
