@@ -16,7 +16,7 @@ export function Hero() {
 						</p>
 						<div className="mt-10 flex flex-col sm:flex-row gap-4">
 							<Link
-								href="#products"
+								href="/products"
 								className="inline-flex items-center justify-center gap-2 h-12 px-8 bg-foreground text-primary-foreground rounded-full text-base font-medium hover:bg-foreground/90 transition-colors"
 							>
 								Découvrir les bijoux
