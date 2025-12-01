@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { formatPriceRangeWithOriginal, formatPriceWithOriginal } from "@/lib/price-display";
 import { isProductSoldOut } from "@/lib/products";
 import type { Product, ProductVariant } from "@/lib/supabase/types";

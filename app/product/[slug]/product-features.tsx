@@ -12,18 +12,18 @@ type ProductFeaturesProps = {
 
 const defaultFeatures: Feature[] = [
 	{
-		title: "Matériaux durables",
+		title: "Petites séries",
 		description:
-			"Fabriqué à partir de matériaux provenant de sources responsables avec un impact environnemental minimal.",
+			"Chaque bijou est proposé en quantité limitée pour garantir exclusivité et qualité.",
 	},
 	{
-		title: "Savoir-faire expert",
+		title: "Sélection soignée",
 		description:
-			"Chaque pièce est soigneusement réalisée par des artisans qualifiés avec une attention aux détails.",
+			"Chaque pièce est choisie une par une dans la collection personnelle.",
 	},
 	{
-		title: "Qualité garantie",
-		description: "Conçu pour durer avec des composants premium et des normes de qualité rigoureuses.",
+		title: "Qualité vérifiée",
+		description: "Tous les bijoux sont inspectés avant expédition.",
 	},
 ];
 
@@ -32,7 +32,7 @@ const defaultIcons = [Leaf, Hammer, Award];
 export function ProductFeatures({ features = defaultFeatures }: ProductFeaturesProps) {
 	return (
 		<section className="mt-20 border-t border-border pt-16">
-			<h2 className="mb-12 text-center text-3xl font-medium tracking-tight">Fabriqué avec intention</h2>
+			<h2 className="mb-12 text-center text-3xl font-medium tracking-tight">Pensé pour durer</h2>
 			<div className="grid gap-8 md:grid-cols-3">
 				{features.map((feature, index) => {
 					const Icon = feature.icon ?? defaultIcons[index % defaultIcons.length];
