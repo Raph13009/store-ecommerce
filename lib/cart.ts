@@ -86,9 +86,14 @@ export async function getCart(): Promise<CartWithItems | null> {
 					images: string[];
 				};
 			};
+			// Ensure price is number (Supabase may return as string from JSON)
+			const price = typeof variant.price === "number" ? variant.price : Number(variant.price);
 			return {
 				...item,
-				variant,
+				variant: {
+					...variant,
+					price,
+				},
 			};
 		}),
 	};
