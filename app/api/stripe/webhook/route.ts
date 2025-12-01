@@ -85,10 +85,25 @@ export async function POST(request: NextRequest) {
 			.eq("cart_id", cartId);
 
 		if (itemsError) {
-			console.error("❌ Error fetching cart items:", itemsError);
-			return NextResponse.json({ error: "Failed to fetch cart items" }, { status: 500 });
+			console.error("❌ Error fetching cart items:");
+			console.error("  - Error object:", JSON.stringify(itemsError, null, 2));
+			console.error("  - Error code:", itemsError?.code);
+			console.error("  - Error message:", itemsError?.message);
+			return NextResponse.json({ error: "Failed to fetch cart items", details: itemsError }, { status: 500 });
 		}
 		console.log(`✅ Found ${items?.length ?? 0} cart items`);
+		if (items && items.length > 0) {
+			console.log("📦 Cart items details:", JSON.stringify(items.map(item => ({
+				id: item.id,
+				variant_id: item.variant_id,
+				quantity: item.quantity,
+				variant: item.variant ? {
+					id: (item.variant as any).id,
+					price: (item.variant as any).price,
+					name: (item.variant as any).name,
+				} : null,
+			})), null, 2));
+		}
 
 		// Calculate total
 		const total = (items ?? []).reduce((sum, item) => {
@@ -124,10 +139,16 @@ export async function POST(request: NextRequest) {
 			.single();
 
 		if (orderError || !order) {
-			console.error("❌ Error creating order:", orderError);
-			return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
+			console.error("❌ Error creating order:");
+			console.error("  - Error object:", JSON.stringify(orderError, null, 2));
+			console.error("  - Error code:", orderError?.code);
+			console.error("  - Error message:", orderError?.message);
+			console.error("  - Error details:", orderError?.details);
+			console.error("  - Error hint:", orderError?.hint);
+			return NextResponse.json({ error: "Failed to create order", details: orderError }, { status: 500 });
 		}
 		console.log(`✅ Order created: ${order.id}`);
+		console.log("📋 Order details:", JSON.stringify(order, null, 2));
 
 		// Create order items
 		const orderItems = (items ?? []).map((item) => {
