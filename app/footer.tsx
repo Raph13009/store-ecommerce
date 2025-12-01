@@ -20,7 +20,9 @@ export function Footer() {
 							/>
 						</Link>
 						<p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-							Essentiels sélectionnés pour une vie moderne. Produits de qualité, pensés avec soin.
+							Des pièces choisies avec attention, proposées en petites séries.
+							<br />
+							Sélection personnelle, en petites quantités et toujours soignée.
 						</p>
 					</div>
 
