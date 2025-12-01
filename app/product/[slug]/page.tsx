@@ -66,6 +66,7 @@ const ProductDetails = async ({ params }: { params: Promise<{ slug: string }> })
 							images: v.images,
 							name: v.name,
 							stock: v.stock,
+							attributes: v.attributes,
 						}))}
 						product={{
 							id: product.id,

@@ -9,10 +9,20 @@ const nextConfig = {
 		typedEnv: true,
 	},
 	images: {
+		// Disable image optimization for external images to avoid hostname issues
+		// This allows all external domains but images won't be optimized by Next.js
+		unoptimized: true,
+		// Keep remotePatterns for future use if we re-enable optimization
 		remotePatterns: [
 			{ hostname: "*.blob.vercel-storage.com" },
-			{ hostname: "*.supabase.co" }, // Supabase Storage
-			{ hostname: "*.supabase.in" }, // Supabase Storage (India region)
+			{
+				protocol: "https",
+				hostname: "*.supabase.co",
+			},
+			{
+				protocol: "https",
+				hostname: "*.supabase.in",
+			},
 		],
 	},
 };

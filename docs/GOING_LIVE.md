@@ -112,3 +112,4 @@ Après avoir mis à jour toutes les variables d'environnement :
    - Vérifiez que le bucket Supabase est public
    - Vérifiez `next.config.mjs` pour les domaines autorisés
 
+

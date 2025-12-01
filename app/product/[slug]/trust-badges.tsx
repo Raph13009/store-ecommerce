@@ -7,7 +7,7 @@ type TrustBadge = {
 };
 
 const defaultBadges: TrustBadge[] = [
-	{ icon: Truck, title: "Expédition rapide", description: "Sous 48h avec suivi" },
+	{ icon: Truck, title: "Expédition rapide", description: "Livraison en 7 jours" },
 	{ icon: Shield, title: "Sélection limitée", description: "Chaque pièce est disponible en petite quantité" },
 	{ icon: RotateCcw, title: "Échanges simples", description: "Nous vous aidons à trouver la pièce idéale" },
 ];

@@ -5,6 +5,8 @@ import { useMemo, useState, useTransition } from "react";
 import { addToCart } from "@/app/cart/actions";
 import { useCart } from "@/app/cart/cart-context";
 import { QuantitySelector } from "@/app/product/[slug]/quantity-selector";
+import { SimpleVariantSelector } from "@/app/product/[slug]/simple-variant-selector";
+import { SizeGuide } from "@/app/product/[slug]/size-guide";
 import { TrustBadges } from "@/app/product/[slug]/trust-badges";
 import { currency, formatMoney, locale } from "@/lib/price-display";
 
@@ -34,15 +36,17 @@ export function AddToCartButton({ variants, product }: AddToCartButtonProps) {
 	const [isPending, startTransition] = useTransition();
 	const { openCart, dispatch } = useCart();
 
-	const selectedVariant = useMemo(() => {
-		if (variants.length === 1) {
-			return variants[0];
-		}
+	// State for selected variant ID
+	const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(
+		variants.length > 0 ? variants[0].id : undefined,
+	);
 
-		// For now, if multiple variants, select first one
-		// You can enhance this with variant selection UI later
-		return variants[0];
-	}, [variants]);
+	const selectedVariant = useMemo(() => {
+		if (variants.length === 0) return undefined;
+		if (variants.length === 1) return variants[0];
+		// Find variant by selected ID, or fallback to first variant
+		return variants.find((v) => v.id === selectedVariantId) ?? variants[0];
+	}, [variants, selectedVariantId]);
 
 	const totalPrice = selectedVariant ? BigInt(selectedVariant.price) * BigInt(quantity) : null;
 
@@ -93,11 +97,31 @@ export function AddToCartButton({ variants, product }: AddToCartButtonProps) {
 		});
 	};
 
+	// Check if product is a ring (bague) or has size variants
+	const isRing = product.name.toLowerCase().includes("bague") || product.name.toLowerCase().includes("ring");
+	const hasSizeVariants = variants.some((v) => v.attributes?.Size || v.attributes?.Taille);
+	const shouldShowSizeGuide = isRing || hasSizeVariants;
+
 	return (
 		<div className="space-y-8">
+			{/* Variant Selector - only shows if multiple variants exist */}
 			{variants.length > 1 && (
-				<div className="text-sm text-muted-foreground">
-					Plusieurs variantes disponibles. Affichage de la première variante.
+				<div className="space-y-3">
+					<div className="flex items-start justify-between gap-4">
+						<div className="flex-1">
+							<SimpleVariantSelector
+								variants={variants}
+								selectedVariantId={selectedVariantId}
+								onVariantSelect={setSelectedVariantId}
+							/>
+						</div>
+						{/* Size Guide - show for rings or products with size variants */}
+						{shouldShowSizeGuide && (
+							<div className="shrink-0 pt-1">
+								<SizeGuide />
+							</div>
+						)}
+					</div>
 				</div>
 			)}
 
