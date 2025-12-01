@@ -40,6 +40,9 @@ export async function POST(request: NextRequest) {
 				quantity: item.quantity,
 			})),
 			mode: "payment",
+			shipping_address_collection: {
+				allowed_countries: ["FR"],
+			},
 			success_url: `${request.headers.get("origin")}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
 			cancel_url: `${request.headers.get("origin")}/cart`,
 			metadata: {
