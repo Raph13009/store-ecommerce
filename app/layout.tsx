@@ -77,15 +77,24 @@ async function getInitialCart() {
 		const transformedCart: Cart = {
 			id: cart.id,
 			lineItems: cart.items.map((item): CartLineItem => {
-				const variant = item.variant;
-				// Force price to number - Supabase returns INTEGER as number, but TypeScript may infer string
-				const price = Number(variant.price);
+				const variant = item.variant as {
+					id: string;
+					price: number;
+					images: string[];
+					name: string;
+					product: {
+						id: string;
+						name: string;
+						slug: string;
+						images: string[];
+					};
+				};
 
 				return {
 					quantity: item.quantity,
 					productVariant: {
 						id: variant.id,
-						price,
+						price: variant.price,
 						images: variant.images,
 						name: variant.name,
 						product: variant.product,
