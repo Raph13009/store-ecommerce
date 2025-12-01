@@ -22,3 +22,4 @@ export function getProductCategory(productName: string): ProductCategory {
 
 export const CATEGORIES: ProductCategory[] = ["Bracelet", "Collier", "Bague"];
 
+
