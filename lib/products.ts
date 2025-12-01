@@ -1,4 +1,4 @@
-import { createServerClient } from "@/lib/supabase/server";
+import { supabase } from "@/lib/supabase/client";
 import type { Product, ProductVariant } from "@/lib/supabase/types";
 
 /**
@@ -18,8 +18,8 @@ export async function getProducts(options?: {
 	active?: boolean;
 	search?: string;
 }) {
-	// Use server-side Supabase for better performance and caching
-	const supabaseClient = await createServerClient();
+	// Use client-side Supabase for public product queries (no cookies needed)
+	const supabaseClient = supabase;
 
 	let query = supabaseClient.from("products").select(`
 		*,
@@ -55,8 +55,8 @@ export async function getProducts(options?: {
 }
 
 export async function getProductBySlug(slug: string) {
-	// Use server-side Supabase for better performance and caching
-	const supabaseClient = await createServerClient();
+	// Use client-side Supabase for public product queries (no cookies needed)
+	const supabaseClient = supabase;
 
 	const { data, error } = await supabaseClient
 		.from("products")
