@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
+import Script from "next/script";
 import { Suspense } from "react";
 import { type Cart, type CartLineItem, CartProvider } from "@/app/cart/cart-context";
 import { CartSidebar } from "@/app/cart/cart-sidebar";
@@ -161,6 +162,19 @@ export default function RootLayout({
 	return (
 		<html lang="fr">
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+				{/* Google tag (gtag.js) */}
+				<Script
+					src="https://www.googletagmanager.com/gtag/js?id=AW-17685738807"
+					strategy="afterInteractive"
+				/>
+				<Script id="google-analytics" strategy="afterInteractive">
+					{`
+						window.dataLayer = window.dataLayer || [];
+						function gtag(){dataLayer.push(arguments);}
+						gtag('js', new Date());
+						gtag('config', 'AW-17685738807');
+					`}
+				</Script>
 				<Suspense>
 					<CartProviderWrapper>{children}</CartProviderWrapper>
 				</Suspense>
