@@ -7,9 +7,9 @@ type TrustBadge = {
 };
 
 const defaultBadges: TrustBadge[] = [
-	{ icon: Truck, title: "Free Shipping", description: "Orders over $500" },
-	{ icon: Shield, title: "10-Year Warranty", description: "Full coverage" },
-	{ icon: RotateCcw, title: "30-Day Returns", description: "Hassle-free" },
+	{ icon: Truck, title: "Livraison gratuite", description: "Commandes de plus de 500 €" },
+	{ icon: Shield, title: "Garantie 10 ans", description: "Couverture complète" },
+	{ icon: RotateCcw, title: "Retours 30 jours", description: "Sans tracas" },
 ];
 
 export function TrustBadges({ badges = defaultBadges }: { badges?: TrustBadge[] }) {

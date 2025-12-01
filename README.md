@@ -1,98 +1,174 @@
-# Your Next Store
+# E-Commerce Store
 
-A Next.js boilerplate for building modern, high-performance e-commerce applications with Your Next Store (YNS) and the Commerce Kit SDK. Simple, quick, powerful, and optimized for LLM ingest.
-
-<div align="center">
-<table>
-<tr>
-<td>
-	<a href="https://yournextstore.com/discord"><img src="https://img.shields.io/discord/1206629600483082341?style=for-the-badge&logo=discord&logoColor=white&labelColor=%235865F2&color=%23555" alt="Join Discord" /></a>
-</td>
-<td>
-	<a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyournextstore%2Fyournextstore&env=ENABLE_EXPERIMENTAL_COREPACK,YNS_API_TENANT,YNS_API_TOKEN&envDescription=Read%20more%20about%20required%20env%20variables%20in%20YNS&envLink=https%3A%2F%2Fgithub.com%2Fyournextstore%2Fyournextstore%2Ftree%2Fupcoming%3Ftab%3Dreadme-ov-file%23add-environmental-variables&project-name=yournextstore&repository-name=yournextstore&demo-title=Your%20Next%20Store&demo-description=A%20Next.js%20boilerplate%20for%20building%20your%20online%20store%20instantly%3A%20simple%2C%20quick%2C%20powerful.&demo-url=https%3A%2F%2Fdemo.yournextstore.com%2F&demo-image=https%3A%2F%2Fyournextstore.com%2Fdemo.png"><img src="https://vercel.com/button" alt="Deploy with Vercel" /></a>
-</td>
-<td>
-<a href="https://www.producthunt.com/posts/your-next-store?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-your-next-store">
-	<picture>
-		<source
-			media="(prefers-color-scheme: dark)"
-			srcSet="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1009314&theme=dark"
-		/>
-		<img
-			src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1009314&theme=light"
-			height="36"
-			alt="Your Next Store ⋅ Online commerce should be fast and modern | Product Hunt"
-		/>
-	</picture>
-</a>
-</td>
-</tr>
-</table>
-
-👉 [demo.yournextstore.com](https://demo.yournextstore.com/) 👈
-
-</div>
+A modern, lightweight e-commerce application built with Next.js, Supabase, and Stripe.
 
 ## Tech Stack
 
 - **Next.js 16** – App Router, React Server Components, React Compiler
+- **Supabase** – PostgreSQL database for products, carts, and orders
+- **Stripe** – Payment processing and checkout
 - **Bun** – Fast JavaScript runtime and package manager
-- **Commerce Kit SDK** – Headless commerce API integration
 - **Tailwind CSS v4** – Modern utility-first styling
-- **Shadcn UI** – Accessible component library with Radix UI primitives
-- **Biome** – Lightning-fast linter and formatter
+- **Shadcn UI** – Accessible component library
 - **TypeScript** – Type-safe development
+
+## Architecture
+
+```
+Next.js (Frontend)
+    ↓
+Supabase (Database: products, carts, orders)
+    ↓
+Stripe (Checkout & Webhooks)
+```
+
+- **Supabase** handles all data: products, cart items, and order history
+- **Stripe** handles payment processing via Checkout Sessions
+- **Next.js** serves as the frontend with server components for data fetching
 
 ## Prerequisites
 
-### Node.js 20+
+- **Node.js 20+** or **Bun 1.0+**
+- **Supabase account** – [Create one here](https://supabase.com)
+- **Stripe account** – [Create one here](https://stripe.com)
 
-We officially support the current LTS version – 20 at the time of writing. YNS should work on versions 18, 20, and 22. If you're using one of those versions and encounter a problem, please report it!
+## Setup Instructions
 
-#### Installing Node.js
-
-Follow the instructions for your operating system found here: [nodejs.org/en/download](https://nodejs.org/en/download)
-
-### bun 1.0+
-
-We officially support bun version 1.0+, but we will do our best to keep it compatible with npm and yarn.
-
-#### Installing bun
-
-The easiest way to install bun is via their installation script:
+### 1. Install Dependencies
 
 ```bash
-curl -fsSL https://bun.sh/install | bash
+bun install
 ```
 
-Alternatively, follow the instructions for your operating system found here: [bun.sh/docs/installation](https://bun.sh/docs/installation)
+### 2. Set Up Supabase
 
-## Create YNS account
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Go to **SQL Editor** in your Supabase dashboard
+3. Run the SQL migration from `supabase/migrations.sql`
+4. Copy your project URL and anon key from **Settings → API**
 
-To use Your Next Store, you'll need to create an account at [yns.app/admin](https://yns.app/admin).
+### 3. Set Up Stripe
 
-After creating your account, you'll be able to create a new store (tenant) and get your API token.
+1. Create a Stripe account at [stripe.com](https://stripe.com)
+2. Get your **Secret Key** from **Developers → API keys**
+3. Set up a webhook endpoint:
+   - Go to **Developers → Webhooks**
+   - Add endpoint: `https://your-domain.com/api/stripe/webhook`
+   - Select events: `checkout.session.completed`, `payment_intent.succeeded`
+   - Copy the **Webhook Signing Secret**
 
-The token can be found in the API section in the sidebar.
+### 4. Configure Environment Variables
 
-## Add Environment Variables
+Create a `.env` file in the root directory:
 
-For YNS to work, you'll need to define a few environmental variables. For local development and testing, you may create an empty `.env` file and copy the contents of `.env.example` into it.
+```bash
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 
-To set env variables in production, you'll need to consult the documentation of your chosen hosting provider.
+# Stripe
+STRIPE_SECRET_KEY=sk_test_your-secret-key-here
+STRIPE_WEBHOOK_SECRET=whsec_your-webhook-secret-here
 
-### Required Environment Variables
+# Application
+NEXT_PUBLIC_ROOT_URL=http://localhost:3000
+```
 
-- `ENABLE_EXPERIMENTAL_COREPACK` – Vercel only: Set to `1` to enable Corepack
-- `YNS_API_TENANT` – Your tenant address, for example `https://yourtenant.yns.app`
-- `YNS_API_TOKEN` – API token generated in the admin panel.
-- `NEXT_PUBLIC_ROOT_URL` – The address of your store without the trailing slash, i.e., `https://demo.yournextstore.com`. When building for the first time, you should set it to any valid URL, i.e. `http://localhost:3000`.
+### 5. Run the Development Server
 
-## Run the store
+```bash
+bun dev
+```
 
-After following the above steps, run `bun install` to install the required dependencies, and then run `bun dev` to start the development server on your machine. Your Next Store will be available at [localhost:3000](http://localhost:3000)
+Visit [http://localhost:3000](http://localhost:3000)
 
+## Project Structure
 
-## Next steps
+```
+├── app/
+│   ├── api/stripe/          # Stripe checkout & webhook handlers
+│   ├── cart/                # Cart components & actions
+│   ├── checkout/            # Checkout success page
+│   ├── product/[slug]/     # Product detail pages
+│   └── products/            # Products listing page
+├── lib/
+│   ├── supabase/           # Supabase client & types
+│   ├── stripe/             # Stripe client
+│   ├── cart.ts             # Cart operations
+│   └── products.ts         # Product queries
+└── supabase/
+    └── migrations.sql      # Database schema
+```
 
-Refer to the documentation found at [yns.app/admin/api/endpoints](https://yns.app/admin/api/endpoints) for more information on how to fetch products or create carts in your store.
+## Database Schema
+
+The SQL migration creates the following tables:
+
+- **products** – Product catalog
+- **product_variants** – Product variants (size, color, etc.)
+- **carts** – Shopping carts
+- **cart_items** – Items in carts
+- **orders** – Completed orders
+- **order_items** – Order line items (snapshot at purchase time)
+
+All tables include proper indexes, RLS policies, and auto-updating timestamps.
+
+## Adding Products
+
+Insert products directly into Supabase:
+
+```sql
+-- Insert a product
+INSERT INTO products (name, slug, description, images, active)
+VALUES (
+  'Example Product',
+  'example-product',
+  'Product description',
+  ARRAY['https://example.com/image.jpg'],
+  true
+);
+
+-- Insert a variant
+INSERT INTO product_variants (product_id, name, price, stock, images)
+VALUES (
+  'product-uuid',
+  'Default',
+  1999, -- price in cents ($19.99)
+  100,
+  ARRAY['https://example.com/variant-image.jpg']
+);
+```
+
+Or use the Supabase dashboard to insert products via the UI.
+
+## Stripe Webhook Setup
+
+For local development, use Stripe CLI to forward webhooks:
+
+```bash
+stripe listen --forward-to localhost:3000/api/stripe/webhook
+```
+
+This will give you a webhook signing secret to use in your `.env` file.
+
+## Production Deployment
+
+1. Deploy to Vercel, Netlify, or your preferred platform
+2. Set environment variables in your hosting dashboard
+3. Update `NEXT_PUBLIC_ROOT_URL` to your production URL
+4. Update Stripe webhook endpoint to your production URL
+5. Run the Supabase migration in production (if using a separate database)
+
+## Features
+
+- ✅ Product browsing and search
+- ✅ Shopping cart with persistent storage
+- ✅ Stripe Checkout integration
+- ✅ Order processing via webhooks
+- ✅ Responsive design
+- ✅ Server-side rendering
+- ✅ Type-safe with TypeScript
+
+## License
+
+MIT

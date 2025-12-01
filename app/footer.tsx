@@ -1,35 +1,5 @@
-import { cacheLife } from "next/cache";
+import Image from "next/image";
 import Link from "next/link";
-import { getCollections } from "@/lib/commerce";
-
-async function FooterCollections() {
-	"use cache";
-	cacheLife("hours");
-
-	const collections = await getCollections();
-
-	if (collections.length === 0) {
-		return null;
-	}
-
-	return (
-		<div>
-			<h3 className="text-sm font-semibold text-foreground">Collections</h3>
-			<ul className="mt-4 space-y-3">
-				{collections.map((collection) => (
-					<li key={collection.id}>
-						<Link
-							href={`/collection/${collection.slug}`}
-							className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-						>
-							{collection.name}
-						</Link>
-					</li>
-				))}
-			</ul>
-		</div>
-	);
-}
 
 export function Footer() {
 	return (
@@ -38,22 +8,42 @@ export function Footer() {
 				<div className="py-12 sm:py-16 flex flex-col sm:flex-row gap-8 sm:gap-16">
 					{/* Brand */}
 					<div className="sm:max-w-xs">
-						<Link href="/" className="text-xl font-bold text-foreground">
-							Your Next Store
+						<Link href="/" className="inline-block">
+							<Image
+								src="/logo.png"
+								alt="La Maison de Lola"
+								width={200}
+								height={80}
+								className="h-16 w-auto object-contain"
+								unoptimized
+								style={{ objectFit: "contain" }}
+							/>
 						</Link>
 						<p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-							Curated essentials for modern living. Quality products, thoughtfully designed.
+							Essentiels sélectionnés pour une vie moderne. Produits de qualité, pensés avec soin.
 						</p>
 					</div>
 
-					{/* Collections */}
-					<FooterCollections />
+					{/* Links */}
+					<div>
+						<h3 className="text-sm font-semibold text-foreground">Boutique</h3>
+						<ul className="mt-4 space-y-3">
+							<li>
+								<Link
+									href="/products"
+									className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+								>
+									Tous les produits
+								</Link>
+							</li>
+						</ul>
+					</div>
 				</div>
 
 				{/* Bottom bar */}
 				<div className="py-6 border-t border-border">
 					<p className="text-sm text-muted-foreground">
-						&copy; {new Date().getFullYear()} Your Next Store. All rights reserved.
+						&copy; {new Date().getFullYear()} Votre Boutique. Tous droits réservés.
 					</p>
 				</div>
 			</div>

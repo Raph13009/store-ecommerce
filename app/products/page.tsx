@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { Hero } from "@/components/sections/hero";
 import { ProductGrid } from "@/components/sections/product-grid";
 
 function ProductGridSkeleton() {
@@ -26,13 +25,15 @@ function ProductGridSkeleton() {
 	);
 }
 
-export default function Home() {
+export default function ProductsPage() {
 	return (
 		<main>
-			<Hero />
-			<Suspense fallback={<ProductGridSkeleton />}>
-				<ProductGrid title="Produits vedettes" limit={6} />
-			</Suspense>
+			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+				<h1 className="text-3xl font-medium tracking-tight mb-8">Tous les produits</h1>
+				<Suspense fallback={<ProductGridSkeleton />}>
+					<ProductGrid title="" description="" showViewAll={false} limit={100} />
+				</Suspense>
+			</div>
 		</main>
 	);
 }

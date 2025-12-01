@@ -9,7 +9,11 @@ const nextConfig = {
 		typedEnv: true,
 	},
 	images: {
-		remotePatterns: [{ hostname: "*.blob.vercel-storage.com" }],
+		remotePatterns: [
+			{ hostname: "*.blob.vercel-storage.com" },
+			{ hostname: "*.supabase.co" }, // Supabase Storage
+			{ hostname: "*.supabase.in" }, // Supabase Storage (India region)
+		],
 	},
 };
 

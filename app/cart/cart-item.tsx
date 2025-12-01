@@ -7,10 +7,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { removeFromCart, setCartQuantity } from "@/app/cart/actions";
 import { type CartLineItem, useCart } from "@/app/cart/cart-context";
-import { formatMoney } from "@/lib/money";
-
-const currency = "USD";
-const locale = "en-US";
+import { formatPriceWithOriginal } from "@/lib/price-display";
 
 type CartItemProps = {
 	item: CartLineItem;
@@ -62,7 +59,7 @@ export function CartItem({ item }: CartItemProps) {
 			<Link
 				href={`/product/${product.slug}`}
 				onClick={closeCart}
-				className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-secondary"
+				className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-secondary"
 			>
 				{image && <Image src={image} alt={product.name} fill className="object-cover" sizes="96px" />}
 			</Link>
@@ -80,7 +77,7 @@ export function CartItem({ item }: CartItemProps) {
 					<button
 						type="button"
 						onClick={handleRemove}
-						className="flex-shrink-0 p-1 text-muted-foreground hover:text-destructive transition-colors"
+						className="shrink-0 p-1 text-muted-foreground hover:text-destructive transition-colors"
 					>
 						<Trash2 className="h-4 w-4" />
 					</button>
@@ -107,9 +104,7 @@ export function CartItem({ item }: CartItemProps) {
 					</div>
 
 					{/* Price */}
-					<span className="text-sm font-semibold">
-						{formatMoney({ amount: lineTotal, currency, locale })}
-					</span>
+					<div className="text-sm">{formatPriceWithOriginal(lineTotal)}</div>
 				</div>
 			</div>
 		</div>

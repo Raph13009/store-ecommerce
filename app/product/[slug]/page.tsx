@@ -3,11 +3,8 @@ import { Suspense } from "react";
 import { AddToCartButton } from "@/app/product/[slug]/add-to-cart-button";
 import { ImageGallery } from "@/app/product/[slug]/image-gallery";
 import { ProductFeatures } from "@/app/product/[slug]/product-features";
-import { commerce } from "@/lib/commerce";
-import { formatMoney } from "@/lib/money";
-
-const currency = "USD";
-const locale = "en-US";
+import { formatPriceRangeWithOriginal, formatPriceWithOriginal } from "@/lib/price-display";
+import { getProductBySlug } from "@/lib/products";
 
 export default async function ProductPage(props: { params: Promise<{ slug: string }> }) {
 	return (
@@ -20,7 +17,7 @@ export default async function ProductPage(props: { params: Promise<{ slug: strin
 const ProductDetails = async ({ params }: { params: Promise<{ slug: string }> }) => {
 	"use cache";
 	const { slug } = await params;
-	const product = await commerce.productGet({ idOrSlug: slug });
+	const product = await getProductBySlug(slug);
 
 	if (!product) {
 		notFound();
@@ -32,12 +29,12 @@ const ProductDetails = async ({ params }: { params: Promise<{ slug: string }> })
 
 	const priceDisplay =
 		prices.length > 1 && minPrice !== maxPrice
-			? `${formatMoney({ amount: minPrice, currency, locale })} - ${formatMoney({ amount: maxPrice, currency, locale })}`
-			: formatMoney({ amount: minPrice, currency, locale });
+			? formatPriceRangeWithOriginal(minPrice, maxPrice)
+			: formatPriceWithOriginal(minPrice);
 
 	const allImages = [
-		...product.images,
-		...product.variants.flatMap((v) => v.images).filter((img) => !product.images.includes(img)),
+		...(product.images ?? []),
+		...product.variants.flatMap((v) => v.images ?? []).filter((img) => !(product.images ?? []).includes(img)),
 	];
 
 	return (
@@ -53,18 +50,24 @@ const ProductDetails = async ({ params }: { params: Promise<{ slug: string }> })
 						<h1 className="text-4xl font-medium tracking-tight text-foreground lg:text-5xl text-balance">
 							{product.name}
 						</h1>
-						<p className="text-2xl font-semibold tracking-tight">{priceDisplay}</p>
+						<div className="text-2xl tracking-tight">{priceDisplay}</div>
 						{product.summary && <p className="text-muted-foreground leading-relaxed">{product.summary}</p>}
 					</div>
 
 					{/* Variant Selector, Quantity, Add to Cart, Trust Badges */}
 					<AddToCartButton
-						variants={product.variants}
+						variants={product.variants.map((v) => ({
+							id: v.id,
+							price: v.price.toString(),
+							images: v.images,
+							name: v.name,
+							stock: v.stock,
+						}))}
 						product={{
 							id: product.id,
 							name: product.name,
 							slug: product.slug,
-							images: product.images,
+							images: product.images ?? [],
 						}}
 					/>
 				</div>

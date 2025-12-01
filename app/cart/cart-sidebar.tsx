@@ -1,30 +1,45 @@
 "use client";
 
 import { ShoppingBag } from "lucide-react";
-import Link from "next/link";
 import { useCart } from "@/app/cart/cart-context";
 import { CartItem } from "@/app/cart/cart-item";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { formatMoney } from "@/lib/money";
-
-const currency = "USD";
-const locale = "en-US";
+import { currency, formatMoney, locale } from "@/lib/price-display";
 
 export function CartSidebar() {
 	const { isOpen, closeCart, items, itemCount, subtotal, cartId } = useCart();
 
-	const checkoutUrl = cartId ? `${process.env.NEXT_PUBLIC_YNS_API_TENANT}/cart/r/${cartId}` : "#";
+	const handleCheckout = async () => {
+		try {
+			const response = await fetch("/api/stripe/checkout", {
+				method: "POST",
+			});
+
+			if (!response.ok) {
+				throw new Error("Failed to create checkout session");
+			}
+
+			const { url } = await response.json();
+			if (url) {
+				window.location.href = url;
+			}
+		} catch (error) {
+			console.error("Checkout error:", error);
+		}
+	};
 
 	return (
 		<Sheet open={isOpen} onOpenChange={(open) => !open && closeCart()}>
 			<SheetContent className="flex flex-col w-full sm:max-w-lg">
 				<SheetHeader className="border-b border-border pb-4">
 					<SheetTitle className="flex items-center gap-2">
-						Your Cart
+						Votre panier
 						{itemCount > 0 && (
-							<span className="text-sm font-normal text-muted-foreground">({itemCount} items)</span>
+							<span className="text-sm font-normal text-muted-foreground">
+								({itemCount} {itemCount === 1 ? "article" : "articles"})
+							</span>
 						)}
 					</SheetTitle>
 				</SheetHeader>
@@ -35,11 +50,11 @@ export function CartSidebar() {
 							<ShoppingBag className="h-10 w-10 text-muted-foreground" />
 						</div>
 						<div className="text-center">
-							<p className="text-lg font-medium">Your cart is empty</p>
-							<p className="text-sm text-muted-foreground mt-1">Add some products to get started</p>
+							<p className="text-lg font-medium">Votre panier est vide</p>
+							<p className="text-sm text-muted-foreground mt-1">Ajoutez des produits pour commencer</p>
 						</div>
 						<Button variant="outline" onClick={closeCart}>
-							Continue Shopping
+							Continuer les achats
 						</Button>
 					</div>
 				) : (
@@ -55,21 +70,19 @@ export function CartSidebar() {
 						<SheetFooter className="border-t border-border pt-4 mt-auto">
 							<div className="w-full space-y-4">
 								<div className="flex items-center justify-between text-base">
-									<span className="font-medium">Subtotal</span>
+									<span className="font-medium">Sous-total</span>
 									<span className="font-semibold">{formatMoney({ amount: subtotal, currency, locale })}</span>
 								</div>
-								<p className="text-xs text-muted-foreground">Shipping and taxes calculated at checkout</p>
-								<Button asChild className="w-full h-12 text-base font-medium">
-									<Link href={checkoutUrl} onClick={closeCart}>
-										Checkout
-									</Link>
+								<p className="text-xs text-muted-foreground">Livraison et taxes calculées à la commande</p>
+								<Button onClick={handleCheckout} className="w-full h-12 text-base font-medium">
+									Commander
 								</Button>
 								<button
 									type="button"
 									onClick={closeCart}
 									className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
 								>
-									Continue Shopping
+									Continuer les achats
 								</button>
 							</div>
 						</SheetFooter>

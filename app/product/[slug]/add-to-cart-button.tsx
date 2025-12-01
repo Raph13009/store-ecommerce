@@ -6,25 +6,15 @@ import { addToCart } from "@/app/cart/actions";
 import { useCart } from "@/app/cart/cart-context";
 import { QuantitySelector } from "@/app/product/[slug]/quantity-selector";
 import { TrustBadges } from "@/app/product/[slug]/trust-badges";
-import { VariantSelector } from "@/app/product/[slug]/variant-selector";
-import { formatMoney } from "@/lib/money";
+import { currency, formatMoney, locale } from "@/lib/price-display";
 
 type Variant = {
 	id: string;
 	price: string;
 	images: string[];
-	combinations: {
-		variantValue: {
-			id: string;
-			value: string;
-			colorValue: string | null;
-			variantType: {
-				id: string;
-				type: "string" | "color";
-				label: string;
-			};
-		};
-	}[];
+	name: string;
+	stock: number;
+	attributes?: Record<string, string> | null;
 };
 
 type AddToCartButtonProps = {
@@ -37,9 +27,6 @@ type AddToCartButtonProps = {
 	};
 };
 
-const currency = "USD";
-const locale = "en-US";
-
 export function AddToCartButton({ variants, product }: AddToCartButtonProps) {
 	const searchParams = useSearchParams();
 	const [quantity, setQuantity] = useState(1);
@@ -51,32 +38,20 @@ export function AddToCartButton({ variants, product }: AddToCartButtonProps) {
 			return variants[0];
 		}
 
-		if (searchParams.size === 0) {
-			return undefined;
-		}
-
-		const paramsOptions: Record<string, string> = {};
-		searchParams.forEach((valueName, key) => {
-			paramsOptions[key] = valueName;
-		});
-
-		return variants.find((variant) =>
-			variant.combinations.every(
-				(combination) =>
-					paramsOptions[combination.variantValue.variantType.label] === combination.variantValue.value,
-			),
-		);
-	}, [variants, searchParams]);
+		// For now, if multiple variants, select first one
+		// You can enhance this with variant selection UI later
+		return variants[0];
+	}, [variants]);
 
 	const totalPrice = selectedVariant ? BigInt(selectedVariant.price) * BigInt(quantity) : null;
 
 	const buttonText = useMemo(() => {
-		if (isPending) return "Adding...";
-		if (!selectedVariant) return "Select options";
+		if (isPending) return "Ajout en cours...";
+		if (!selectedVariant) return "Sélectionner les options";
 		if (totalPrice) {
-			return `Add to Cart — ${formatMoney({ amount: totalPrice, currency, locale })}`;
+			return `Ajouter au panier — ${formatMoney({ amount: totalPrice, currency, locale })}`;
 		}
-		return "Add to Cart";
+		return "Ajouter au panier";
 	}, [isPending, selectedVariant, totalPrice]);
 
 	const handleSubmit = (e: React.FormEvent) => {
@@ -98,6 +73,7 @@ export function AddToCartButton({ variants, product }: AddToCartButtonProps) {
 						id: selectedVariant.id,
 						price: selectedVariant.price,
 						images: selectedVariant.images,
+						name: selectedVariant.name,
 						product,
 					},
 				},
@@ -111,7 +87,11 @@ export function AddToCartButton({ variants, product }: AddToCartButtonProps) {
 
 	return (
 		<div className="space-y-8">
-			{variants.length > 1 && <VariantSelector variants={variants} selectedVariantId={selectedVariant?.id} />}
+			{variants.length > 1 && (
+				<div className="text-sm text-muted-foreground">
+					Plusieurs variantes disponibles. Affichage de la première variante.
+				</div>
+			)}
 
 			<QuantitySelector quantity={quantity} onQuantityChange={setQuantity} disabled={isPending} />
 

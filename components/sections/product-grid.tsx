@@ -1,28 +1,25 @@
-import type { APIProductsBrowseResult } from "commerce-kit";
 import { ArrowRight } from "lucide-react";
 import { cacheLife } from "next/cache";
 import Image from "next/image";
 import Link from "next/link";
-import { commerce } from "@/lib/commerce";
-import { formatMoney } from "@/lib/money";
+import { formatPriceRangeWithOriginal, formatPriceWithOriginal } from "@/lib/price-display";
+import { getProducts } from "@/lib/products";
+import type { Product, ProductVariant } from "@/lib/supabase/types";
 
-const currency = "USD";
-const locale = "en-US";
-
-export type Product = APIProductsBrowseResult["data"][number];
+type ProductWithVariants = Product & { variants: ProductVariant[] };
 
 type ProductGridProps = {
 	title?: string;
 	description?: string;
-	products?: Product[];
+	products?: ProductWithVariants[];
 	limit?: number;
 	showViewAll?: boolean;
 	viewAllHref?: string;
 };
 
 export async function ProductGrid({
-	title = "Featured Products",
-	description = "Handpicked favorites from our collection",
+	title = "Produits vedettes",
+	description = "Sélection de nos favoris",
 	products,
 	limit = 6,
 	showViewAll = true,
@@ -31,7 +28,7 @@ export async function ProductGrid({
 	"use cache";
 	cacheLife("seconds");
 
-	const displayProducts = products ?? (await commerce.productBrowse({ active: true, limit })).data;
+	const displayProducts = products ?? (await getProducts({ active: true, limit }));
 
 	return (
 		<section id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
@@ -45,7 +42,7 @@ export async function ProductGrid({
 						href={viewAllHref}
 						className="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
 					>
-						View all
+						Tout voir
 						<ArrowRight className="h-4 w-4" />
 					</Link>
 				)}
@@ -60,8 +57,8 @@ export async function ProductGrid({
 
 					const priceDisplay =
 						prices.length > 1 && minPrice !== maxPrice
-							? `${formatMoney({ amount: minPrice, currency, locale })} - ${formatMoney({ amount: maxPrice, currency, locale })}`
-							: formatMoney({ amount: minPrice, currency, locale });
+							? formatPriceRangeWithOriginal(minPrice, maxPrice)
+							: formatPriceWithOriginal(minPrice);
 
 					const allImages = [
 						...(product.images ?? []),
@@ -79,22 +76,22 @@ export async function ProductGrid({
 										alt={product.name}
 										fill
 										sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-										className="object-cover transition-opacity duration-500 group-hover:opacity-0"
+										className="object-cover transition-all duration-500 group-hover:brightness-110"
 									/>
 								)}
 								{secondaryImage && (
 									<Image
 										src={secondaryImage}
-										alt={`${product.name} - alternate view`}
+										alt={`${product.name} - vue alternative`}
 										fill
 										sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-										className="object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+										className="object-cover opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:brightness-110 absolute inset-0"
 									/>
 								)}
 							</div>
 							<div className="space-y-1">
 								<h3 className="text-base font-medium text-foreground">{product.name}</h3>
-								<p className="text-base font-semibold text-foreground">{priceDisplay}</p>
+								<div className="text-base text-foreground">{priceDisplay}</div>
 							</div>
 						</Link>
 					);
@@ -107,7 +104,7 @@ export async function ProductGrid({
 						href={viewAllHref}
 						className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
 					>
-						View all products
+						Voir tous les produits
 						<ArrowRight className="h-4 w-4" />
 					</Link>
 				</div>

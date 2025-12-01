@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { cookies } from "next/headers";
+import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
-import { CartProvider } from "@/app/cart/cart-context";
+import { type Cart, CartProvider } from "@/app/cart/cart-context";
 import { CartSidebar } from "@/app/cart/cart-sidebar";
 import { CartButton } from "@/app/cart-button";
 import { Footer } from "@/app/footer";
 import { Navbar } from "@/app/navbar";
-import { commerce } from "@/lib/commerce";
+import { getCart } from "@/lib/cart";
 import "@/app/globals.css";
 import { ShoppingCartIcon } from "lucide-react";
 
@@ -22,9 +22,40 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
+const rootUrl = process.env.NEXT_PUBLIC_ROOT_URL || "http://localhost:3000";
+
 export const metadata: Metadata = {
-	title: "Your Next Store",
-	description: "Your next e-commerce store",
+	title: "La Maison de Lola ✨",
+	description:
+		"Derniers bijoux de ma collection personnelle ✨ Des pièces fines en inox doré, sélectionnées avec soin et proposées à prix doux jusqu'à écoulement des stocks.",
+	icons: {
+		icon: "/favicon.ico",
+		shortcut: "/favicon.ico",
+		apple: "/favicon.ico",
+	},
+	openGraph: {
+		title: "La Maison de Lola ✨ Bijoux en inox doré",
+		description:
+			"Derniers bijoux de ma collection personnelle. Des pièces fines en inox doré, sélectionnées avec soin et proposées à prix doux jusqu'à écoulement des stocks.",
+		images: [
+			{
+				url: `${rootUrl}/logo.png`,
+				width: 1200,
+				height: 630,
+				alt: "La Maison de Lola",
+			},
+		],
+		type: "website",
+		locale: "fr_FR",
+		siteName: "La Maison de Lola",
+	},
+	twitter: {
+		card: "summary_large_image",
+		title: "La Maison de Lola ✨ Bijoux en inox doré",
+		description:
+			"Derniers bijoux de ma collection personnelle. Des pièces fines en inox doré, sélectionnées avec soin et proposées à prix doux jusqu'à écoulement des stocks.",
+		images: [`${rootUrl}/logo.png`],
+	},
 };
 
 function CartButtonFallback() {
@@ -36,18 +67,30 @@ function CartButtonFallback() {
 }
 
 async function getInitialCart() {
-	const cookieStore = await cookies();
-	const cartId = cookieStore.get("cartId")?.value;
-
-	if (!cartId) {
-		return { cart: null, cartId: null };
-	}
-
 	try {
-		const cart = await commerce.cartGet({ cartId });
-		return { cart: cart ?? null, cartId };
+		const cart = await getCart();
+		if (!cart) {
+			return { cart: null, cartId: null };
+		}
+
+		// Transform Supabase cart to Cart type expected by context
+		const transformedCart: Cart = {
+			id: cart.id,
+			lineItems: cart.items.map((item) => ({
+				quantity: item.quantity,
+				productVariant: {
+					id: item.variant.id,
+					price: item.variant.price.toString(),
+					images: item.variant.images,
+					name: item.variant.name,
+					product: item.variant.product,
+				},
+			})),
+		};
+
+		return { cart: transformedCart, cartId: cart.id };
 	} catch {
-		return { cart: null, cartId };
+		return { cart: null, cartId: null };
 	}
 }
 
@@ -59,10 +102,19 @@ async function CartProviderWrapper({ children }: { children: React.ReactNode }) 
 			<div className="flex min-h-screen flex-col">
 				<header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
 					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-						<div className="flex items-center justify-between h-16">
+						<div className="flex items-center justify-between h-20 py-2">
 							<div className="flex items-center gap-8">
-								<Link href="/" className="text-xl font-bold">
-									Your Next Store
+								<Link href="/" className="flex items-center">
+									<Image
+										src="/logo.png"
+										alt="La Maison de Lola"
+										width={250}
+										height={100}
+										className="h-20 w-auto object-contain"
+										priority
+										unoptimized
+										style={{ objectFit: "contain" }}
+									/>
 								</Link>
 								<Suspense>
 									<Navbar />
@@ -90,7 +142,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
+		<html lang="fr">
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<Suspense>
 					<CartProviderWrapper>{children}</CartProviderWrapper>

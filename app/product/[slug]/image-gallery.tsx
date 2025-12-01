@@ -27,7 +27,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
 		return (
 			<div className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
 				<div className="aspect-square bg-secondary rounded-2xl flex items-center justify-center">
-					<p className="text-muted-foreground">No images available</p>
+					<p className="text-muted-foreground">Aucune image disponible</p>
 				</div>
 			</div>
 		);
@@ -39,10 +39,10 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
 			<div className="group relative aspect-square overflow-hidden rounded-2xl bg-secondary">
 				<Image
 					src={images[selectedIndex]}
-					alt={`${productName} - View ${selectedIndex + 1}`}
+					alt={`${productName} - Vue ${selectedIndex + 1}`}
 					fill
 					className={cn(
-						"object-cover transition-transform duration-500",
+						"object-cover transition-all duration-500 group-hover:brightness-110",
 						isZoomed && "scale-150 cursor-zoom-out",
 					)}
 					onClick={() => setIsZoomed(!isZoomed)}
@@ -81,7 +81,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
 				<div className="absolute bottom-4 right-4 opacity-0 transition-opacity group-hover:opacity-100">
 					<div className="flex items-center gap-2 rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium backdrop-blur-sm">
 						<ZoomIn className="h-3.5 w-3.5" />
-						Click to zoom
+						Cliquer pour zoomer
 					</div>
 				</div>
 
@@ -102,7 +102,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
 							type="button"
 							onClick={() => setSelectedIndex(index)}
 							className={cn(
-								"relative aspect-square w-20 flex-shrink-0 overflow-hidden rounded-lg transition-all duration-200",
+								"relative aspect-square w-20 shrink-0 overflow-hidden rounded-lg transition-all duration-200",
 								selectedIndex === index
 									? "ring-2 ring-foreground ring-offset-2 ring-offset-background"
 									: "opacity-60 hover:opacity-100",
@@ -110,9 +110,9 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
 						>
 							<Image
 								src={image}
-								alt={`${productName} thumbnail ${index + 1}`}
+								alt={`${productName} miniature ${index + 1}`}
 								fill
-								className="object-cover"
+								className="object-cover transition-all duration-300 hover:brightness-110"
 							/>
 						</button>
 					))}

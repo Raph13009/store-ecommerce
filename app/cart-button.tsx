@@ -11,7 +11,7 @@ export function CartButton() {
 			type="button"
 			onClick={openCart}
 			className="p-2 hover:bg-secondary rounded-full transition-colors relative"
-			aria-label="Shopping cart"
+			aria-label="Panier"
 		>
 			<ShoppingCart className="w-6 h-6" />
 			{itemCount > 0 && (

@@ -7,8 +7,9 @@ export type CartLineItem = {
 	quantity: number;
 	productVariant: {
 		id: string;
-		price: string;
+		price: number; // in cents
 		images: string[];
+		name: string;
 		product: {
 			id: string;
 			name: string;
