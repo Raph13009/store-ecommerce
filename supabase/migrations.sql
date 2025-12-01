@@ -145,6 +145,10 @@ CREATE POLICY "Public can create orders" ON orders
 CREATE POLICY "Public can view their own orders" ON orders
 	FOR SELECT USING (true);
 
+-- Allow public to create order items (for checkout)
+CREATE POLICY "Public can create order items" ON order_items
+	FOR INSERT WITH CHECK (true);
+
 -- Allow public to view order items for their orders
 CREATE POLICY "Public can view order items" ON order_items
 	FOR SELECT USING (true);
