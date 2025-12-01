@@ -44,7 +44,7 @@ function findBestVariantId(
 	}
 
 	// Fallback to any variant with this attribute value (even if out of stock)
-	let fallbackVariant = variants.find((v) => v.attributes?.[attributeKey] === attributeValue);
+	let fallbackVariant: Variant | undefined = variants.find((v) => v.attributes?.[attributeKey] === attributeValue);
 	if (fallbackVariant) return fallbackVariant.id;
 
 	// Try alternative keys for size
@@ -57,7 +57,7 @@ function findBestVariantId(
 		}
 	}
 
-	return fallbackVariant?.id;
+	return undefined;
 }
 
 /**
