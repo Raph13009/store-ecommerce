@@ -62,3 +62,14 @@ export type OrderItem = {
 	variant_name: string;
 	created_at: string;
 };
+
+export type Review = {
+	id: string;
+	product_id: string;
+	author_name: string;
+	content: string;
+	author_image: string | null;
+	stars: number; // 0 to 5
+	created_at: string;
+	updated_at: string;
+};

@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { AddToCartButton } from "@/app/product/[slug]/add-to-cart-button";
 import { ImageGallery } from "@/app/product/[slug]/image-gallery";
 import { ProductFeatures } from "@/app/product/[slug]/product-features";
+import { ProductReviews } from "@/app/product/[slug]/product-reviews";
 import { ProductMobileBackButton } from "@/components/product-mobile-back-button";
 import { formatPriceRangeWithOriginal, formatPriceWithOriginal } from "@/lib/price-display";
 import { getProductBySlug } from "@/lib/products";
@@ -77,6 +78,9 @@ const ProductDetails = async ({ params }: { params: Promise<{ slug: string }> })
 					/>
 				</div>
 			</div>
+
+			{/* Reviews Section (full width below) */}
+			<ProductReviews productId={product.id} />
 
 			{/* Features Section (full width below) */}
 			<ProductFeatures />
