@@ -91,11 +91,71 @@ export function CartSidebar() {
 
 						<SheetFooter className="border-t border-border pt-4 mt-auto">
 							<div className="w-full space-y-4">
-								<div className="flex items-center justify-between text-base">
-									<span className="font-medium">Sous-total</span>
-									<span className="font-semibold">{formatMoney({ amount: subtotal, currency, locale })}</span>
+								{/* Détails du prix section */}
+								<div className="space-y-3">
+									<h3 className="text-base font-medium" style={{ color: "#2A2A2A" }}>
+										Détails du prix
+									</h3>
+									<div className="space-y-2.5">
+										{/* Prix initial et promotionnel */}
+										<div className="flex items-center justify-between text-sm">
+											<span style={{ color: "#2A2A2A" }}>Prix initial du bijou</span>
+											<span className="line-through" style={{ color: "#A7A7A7" }}>
+												{formatMoney({ amount: (subtotal * BigInt(160)) / BigInt(100), currency, locale })}
+											</span>
+										</div>
+										<div className="flex items-center justify-between text-sm">
+											<span style={{ color: "#2A2A2A" }}>Prix promotionnel</span>
+											<span className="font-semibold" style={{ color: "#2A2A2A" }}>
+												{formatMoney({ amount: subtotal, currency, locale })}
+											</span>
+										</div>
+										{/* Frais de livraison */}
+										<div className="flex items-center justify-between text-sm">
+											<span style={{ color: "#2A2A2A" }}>Frais de livraison</span>
+											<span className="line-through" style={{ color: "#A7A7A7" }}>
+												6,99 €
+											</span>
+										</div>
+										<div className="flex items-center justify-between text-sm">
+											<span style={{ color: "#2A2A2A" }}>Livraison offerte</span>
+											<span className="font-semibold" style={{ color: "#2A2A2A" }}>
+												0,00 €
+											</span>
+										</div>
+										<p className="text-xs mt-1.5" style={{ color: "#A6A6A6" }}>
+											Livraison offerte exceptionnellement dans le cadre de notre liquidation totale.
+										</p>
+									</div>
+									{/* Separator before total */}
+									<div className="border-t border-border pt-2.5 mt-2.5">
+										<div className="flex items-center justify-between">
+											<span className="font-semibold text-base" style={{ color: "#000000" }}>
+												Total
+											</span>
+											<span className="font-bold text-lg" style={{ color: "#000000" }}>
+												{formatMoney({ amount: subtotal, currency, locale })}
+											</span>
+										</div>
+									</div>
 								</div>
-								<p className="text-xs text-muted-foreground">Livraison et taxes calculées à la commande</p>
+								{/* Reassurance block */}
+								<div className="flex items-center gap-2 text-xs" style={{ color: "#7A7A7A" }}>
+									<svg
+										width="14"
+										height="14"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										strokeWidth="2"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									>
+										<rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+										<path d="M7 11V7a5 5 0 0 1 10 0v4" />
+									</svg>
+									<span>Paiement 100% sécurisé via Stripe</span>
+								</div>
 								<Button onClick={handleCheckout} className="w-full h-12 text-base font-medium">
 									Commander
 								</Button>
