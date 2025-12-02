@@ -164,7 +164,7 @@ export async function addToCart(variantId: string, quantity = 1) {
 		}
 		
 		cartId = data.id;
-		cookieStore.set("cartId", cartId, {
+		cookieStore.set("cartId", data.id, {
 			httpOnly: true,
 			secure: process.env.NODE_ENV === "production",
 			sameSite: "lax",
@@ -187,7 +187,7 @@ export async function addToCart(variantId: string, quantity = 1) {
 			}
 			
 			cartId = newCart.id;
-			cookieStore.set("cartId", cartId, {
+			cookieStore.set("cartId", newCart.id, {
 				httpOnly: true,
 				secure: process.env.NODE_ENV === "production",
 				sameSite: "lax",
