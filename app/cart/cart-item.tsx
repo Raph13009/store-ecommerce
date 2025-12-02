@@ -3,6 +3,7 @@
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { removeFromCart, setCartQuantity } from "@/app/cart/actions";
 import { type CartLineItem, useCart } from "@/app/cart/cart-context";
@@ -13,6 +14,7 @@ type CartItemProps = {
 };
 
 export function CartItem({ item }: CartItemProps) {
+	const router = useRouter();
 	const { dispatch, closeCart } = useCart();
 	const [, startTransition] = useTransition();
 
@@ -25,15 +27,27 @@ export function CartItem({ item }: CartItemProps) {
 
 	const handleRemove = () => {
 		startTransition(async () => {
+			console.log("🗑️ [CART_ITEM] Removing item:", productVariant.id);
 			dispatch({ type: "REMOVE", variantId: productVariant.id });
-			await removeFromCart(productVariant.id);
+			const result = await removeFromCart(productVariant.id);
+			console.log("🗑️ [CART_ITEM] Remove result:", result);
+			if (result.success && result.cart) {
+				dispatch({ type: "SYNC", cart: result.cart });
+			}
+			router.refresh();
 		});
 	};
 
 	const handleIncrement = () => {
 		startTransition(async () => {
+			console.log("➕ [CART_ITEM] Incrementing item:", productVariant.id);
 			dispatch({ type: "INCREASE", variantId: productVariant.id });
-			await setCartQuantity(productVariant.id, quantity + 1);
+			const result = await setCartQuantity(productVariant.id, quantity + 1);
+			console.log("➕ [CART_ITEM] Increment result:", result);
+			if (result.success && result.cart) {
+				dispatch({ type: "SYNC", cart: result.cart });
+			}
+			router.refresh();
 		});
 	};
 
@@ -43,8 +57,14 @@ export function CartItem({ item }: CartItemProps) {
 			return;
 		}
 		startTransition(async () => {
+			console.log("➖ [CART_ITEM] Decrementing item:", productVariant.id);
 			dispatch({ type: "DECREASE", variantId: productVariant.id });
-			await setCartQuantity(productVariant.id, quantity - 1);
+			const result = await setCartQuantity(productVariant.id, quantity - 1);
+			console.log("➖ [CART_ITEM] Decrement result:", result);
+			if (result.success && result.cart) {
+				dispatch({ type: "SYNC", cart: result.cart });
+			}
+			router.refresh();
 		});
 	};
 

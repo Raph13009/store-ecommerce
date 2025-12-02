@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { addToCart } from "@/app/cart/actions";
 import { useCart } from "@/app/cart/cart-context";
@@ -30,10 +30,11 @@ type AddToCartButtonProps = {
 };
 
 export function AddToCartButton({ variants, product }: AddToCartButtonProps) {
+	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [quantity, setQuantity] = useState(1);
 	const [isPending, startTransition] = useTransition();
-	const { openCart, dispatch } = useCart();
+	const { openCart, dispatch, cart } = useCart();
 
 	// State for selected variant ID
 	const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(
@@ -68,6 +69,11 @@ export function AddToCartButton({ variants, product }: AddToCartButtonProps) {
 
 		// Execute server action with optimistic update
 		startTransition(async () => {
+			console.log("🛒 [ADD_TO_CART] Starting add to cart process");
+			console.log("🛒 [ADD_TO_CART] Current cart before:", cart);
+			console.log("🛒 [ADD_TO_CART] Variant ID:", selectedVariant.id);
+			console.log("🛒 [ADD_TO_CART] Quantity:", quantity);
+
 			// Dispatch inside transition for optimistic update
 			dispatch({
 				type: "ADD_ITEM",
@@ -86,7 +92,33 @@ export function AddToCartButton({ variants, product }: AddToCartButtonProps) {
 				},
 			});
 
-			await addToCart(selectedVariant.id, quantity);
+			console.log("🛒 [ADD_TO_CART] Optimistic update dispatched");
+
+			try {
+				const result = await addToCart(selectedVariant.id, quantity);
+				console.log("🛒 [ADD_TO_CART] Server response:", result);
+
+				if (result.success) {
+					console.log("🛒 [ADD_TO_CART] Success! Cart from server:", result.cart);
+					if (result.cart) {
+						console.log("🛒 [ADD_TO_CART] Cart has", result.cart.lineItems.length, "items");
+						// Sync cart with server response
+						dispatch({ type: "SYNC", cart: result.cart });
+						console.log("🛒 [ADD_TO_CART] Cart synced with server data");
+					} else {
+						console.warn("⚠️ [ADD_TO_CART] Success but cart is null!");
+					}
+				} else {
+					console.error("❌ [ADD_TO_CART] Server action failed:", result);
+				}
+
+				// Refresh to sync cart from server
+				console.log("🛒 [ADD_TO_CART] Refreshing router...");
+				router.refresh();
+				console.log("🛒 [ADD_TO_CART] Router refreshed");
+			} catch (error) {
+				console.error("❌ [ADD_TO_CART] Error:", error);
+			}
 
 			// Reset quantity after add
 			setQuantity(1);

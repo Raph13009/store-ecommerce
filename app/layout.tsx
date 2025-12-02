@@ -69,9 +69,15 @@ function CartButtonFallback() {
 }
 
 async function getInitialCart() {
+	console.log("🏗️ [LAYOUT] getInitialCart called");
 	try {
 		const cart = await getCart();
+		console.log("🏗️ [LAYOUT] Cart from getCart:", {
+			id: cart?.id,
+			itemsCount: cart?.items?.length ?? 0,
+		});
 		if (!cart) {
+			console.log("🏗️ [LAYOUT] No cart found, returning null");
 			return { cart: null, cartId: null };
 		}
 
@@ -105,8 +111,13 @@ async function getInitialCart() {
 			}),
 		};
 
+		console.log("🏗️ [LAYOUT] Transformed cart:", {
+			id: transformedCart.id,
+			lineItemsCount: transformedCart.lineItems.length,
+		});
 		return { cart: transformedCart, cartId: cart.id };
-	} catch {
+	} catch (error) {
+		console.error("❌ [LAYOUT] Error in getInitialCart:", error);
 		return { cart: null, cartId: null };
 	}
 }

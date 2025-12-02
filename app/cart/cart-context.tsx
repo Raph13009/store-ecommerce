@@ -28,7 +28,8 @@ type CartAction =
 	| { type: "INCREASE"; variantId: string }
 	| { type: "DECREASE"; variantId: string }
 	| { type: "REMOVE"; variantId: string }
-	| { type: "ADD_ITEM"; item: CartLineItem };
+	| { type: "ADD_ITEM"; item: CartLineItem }
+	| { type: "SYNC"; cart: Cart | null };
 
 type CartContextValue = {
 	cart: Cart | null;
@@ -118,6 +119,13 @@ export function CartProvider({ children, initialCart, initialCartId }: CartProvi
 					lineItems: [...state.lineItems, action.item],
 				};
 			}
+
+			case "SYNC":
+				console.log("🔄 [CART_CONTEXT] SYNC action - new cart:", {
+					id: action.cart?.id,
+					lineItemsCount: action.cart?.lineItems.length ?? 0,
+				});
+				return action.cart;
 
 			default:
 				return state;

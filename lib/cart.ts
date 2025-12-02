@@ -18,21 +18,26 @@ export type CartWithItems = Cart & {
 };
 
 async function getOrCreateCartId(): Promise<string | null> {
+	console.log("🍪 [COOKIE] Getting or creating cart ID...");
 	const cookieStore = await cookies();
 	const existingCartId = cookieStore.get("cartId")?.value;
+	console.log("🍪 [COOKIE] Existing cart ID from cookie:", existingCartId);
 
 	if (existingCartId) {
+		console.log("✅ [COOKIE] Using existing cart ID:", existingCartId);
 		return existingCartId;
 	}
 
+	console.log("🍪 [COOKIE] No existing cart ID, creating new cart...");
 	const supabase = await createServerClient();
 	const { data, error } = await supabase.from("carts").insert({}).select().single();
 
 	if (error || !data) {
-		console.error("Error creating cart:", error);
+		console.error("❌ [COOKIE] Error creating cart:", error);
 		return null;
 	}
 
+	console.log("✅ [COOKIE] New cart created:", data.id);
 	cookieStore.set("cartId", data.id, {
 		httpOnly: true,
 		secure: process.env.NODE_ENV === "production",
@@ -40,13 +45,17 @@ async function getOrCreateCartId(): Promise<string | null> {
 		path: "/",
 		maxAge: 60 * 60 * 24 * 30, // 30 days
 	});
+	console.log("✅ [COOKIE] Cookie set with ID:", data.id);
 
 	return data.id;
 }
 
 export async function getCart(): Promise<CartWithItems | null> {
+	console.log("🛍️ [GET_CART] Fetching cart...");
 	const cartId = await getOrCreateCartId();
+	console.log("🛍️ [GET_CART] Cart ID:", cartId);
 	if (!cartId) {
+		console.warn("⚠️ [GET_CART] No cart ID, returning null");
 		return null;
 	}
 
@@ -55,8 +64,11 @@ export async function getCart(): Promise<CartWithItems | null> {
 	const { data: cart, error: cartError } = await supabase.from("carts").select("*").eq("id", cartId).single();
 
 	if (cartError || !cart) {
+		console.error("❌ [GET_CART] Error fetching cart:", cartError);
 		return null;
 	}
+
+	console.log("🛍️ [GET_CART] Cart found:", cart.id);
 
 	const { data: items, error: itemsError } = await supabase
 		.from("cart_items")
@@ -72,11 +84,13 @@ export async function getCart(): Promise<CartWithItems | null> {
 		.eq("cart_id", cartId);
 
 	if (itemsError) {
-		console.error("Error fetching cart items:", itemsError);
+		console.error("❌ [GET_CART] Error fetching cart items:", itemsError);
 		return { ...cart, items: [] };
 	}
 
-	return {
+	console.log("🛍️ [GET_CART] Found", items?.length ?? 0, "items in cart");
+
+	const result = {
 		...cart,
 		items: (items ?? []).map((item) => {
 			const variant = item.variant as ProductVariant & {
@@ -98,25 +112,34 @@ export async function getCart(): Promise<CartWithItems | null> {
 			};
 		}),
 	};
+
+	console.log("🛍️ [GET_CART] Returning cart with", result.items.length, "items");
+	return result;
 }
 
 export async function addToCart(variantId: string, quantity = 1) {
+	console.log("📦 [LIB_CART] addToCart - variantId:", variantId, "quantity:", quantity);
 	const cartId = await getOrCreateCartId();
+	console.log("📦 [LIB_CART] Cart ID:", cartId);
 	if (!cartId) {
+		console.error("❌ [LIB_CART] No cart ID available");
 		return { success: false, cart: null };
 	}
 
 	const supabase = await createServerClient();
 
 	// Check if item already exists in cart
-	const { data: existingItem } = await supabase
+	const { data: existingItem, error: checkError } = await supabase
 		.from("cart_items")
 		.select("*")
 		.eq("cart_id", cartId)
 		.eq("variant_id", variantId)
 		.single();
 
+	console.log("📦 [LIB_CART] Existing item check:", { exists: !!existingItem, error: checkError });
+
 	if (existingItem) {
+		console.log("📦 [LIB_CART] Updating existing item quantity from", existingItem.quantity, "to", existingItem.quantity + quantity);
 		// Update quantity
 		const { error } = await supabase
 			.from("cart_items")
@@ -124,10 +147,12 @@ export async function addToCart(variantId: string, quantity = 1) {
 			.eq("id", existingItem.id);
 
 		if (error) {
-			console.error("Error updating cart item:", error);
+			console.error("❌ [LIB_CART] Error updating cart item:", error);
 			return { success: false, cart: null };
 		}
+		console.log("✅ [LIB_CART] Item quantity updated successfully");
 	} else {
+		console.log("📦 [LIB_CART] Inserting new cart item");
 		// Insert new item
 		const { error } = await supabase.from("cart_items").insert({
 			cart_id: cartId,
@@ -136,12 +161,19 @@ export async function addToCart(variantId: string, quantity = 1) {
 		});
 
 		if (error) {
-			console.error("Error adding cart item:", error);
+			console.error("❌ [LIB_CART] Error adding cart item:", error);
 			return { success: false, cart: null };
 		}
+		console.log("✅ [LIB_CART] New item inserted successfully");
 	}
 
+	console.log("📦 [LIB_CART] Fetching updated cart...");
 	const cart = await getCart();
+	console.log("📦 [LIB_CART] Cart fetched:", {
+		id: cart?.id,
+		itemsCount: cart?.items?.length ?? 0,
+		items: cart?.items?.map(i => ({ variantId: i.variant_id, quantity: i.quantity })) ?? [],
+	});
 	return { success: true, cart };
 }
 
