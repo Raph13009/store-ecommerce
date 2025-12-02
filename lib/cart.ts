@@ -240,14 +240,64 @@ export async function addToCart(variantId: string, quantity = 1) {
 		console.log("✅ [LIB_CART] New item inserted successfully");
 	}
 
-	console.log("📦 [LIB_CART] Fetching updated cart...");
-	const cart = await getCart();
-	console.log("📦 [LIB_CART] Cart fetched:", {
-		id: cart?.id,
-		itemsCount: cart?.items?.length ?? 0,
-		items: cart?.items?.map(i => ({ variantId: i.variant_id, quantity: i.quantity })) ?? [],
+	console.log("📦 [LIB_CART] Fetching updated cart directly with cartId:", cartId);
+	// Fetch cart directly using the cartId we just used, don't use getCart() which might create a new cart
+	const supabase = await createServerClient();
+	const { data: directCart, error: directError } = await supabase.from("carts").select("*").eq("id", cartId).single();
+	
+	if (directError || !directCart) {
+		console.error("❌ [LIB_CART] Could not fetch cart directly:", directError);
+		return { success: false, cart: null };
+	}
+	
+	// Fetch items directly
+	const { data: items, error: itemsError } = await supabase
+		.from("cart_items")
+		.select(
+			`
+			*,
+			variant:product_variants(
+				*,
+				product:products(id, name, slug, images)
+			)
+		`,
+		)
+		.eq("cart_id", cartId);
+	
+	if (itemsError) {
+		console.error("❌ [LIB_CART] Error fetching items directly:", itemsError);
+		return { success: false, cart: null };
+	}
+	
+	const finalCart: CartWithItems = {
+		...directCart,
+		items: (items ?? []).map((item) => {
+			const variant = item.variant as ProductVariant & {
+				product: {
+					id: string;
+					name: string;
+					slug: string;
+					images: string[];
+				};
+			};
+			const price = typeof variant.price === "number" ? variant.price : Number(variant.price);
+			return {
+				...item,
+				variant: {
+					...variant,
+					price,
+				},
+			};
+		}),
+	};
+	
+	console.log("📦 [LIB_CART] Cart fetched directly:", {
+		id: finalCart.id,
+		itemsCount: finalCart.items.length,
+		items: finalCart.items.map(i => ({ variantId: i.variant_id, quantity: i.quantity })),
 	});
-	return { success: true, cart };
+	
+	return { success: true, cart: finalCart };
 }
 
 export async function removeFromCart(variantId: string) {
