@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { addToCart } from "@/app/cart/actions";
 import { useCart } from "@/app/cart/cart-context";
@@ -30,7 +30,6 @@ type AddToCartButtonProps = {
 };
 
 export function AddToCartButton({ variants, product }: AddToCartButtonProps) {
-	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [quantity, setQuantity] = useState(1);
 	const [isPending, startTransition] = useTransition();
@@ -88,9 +87,6 @@ export function AddToCartButton({ variants, product }: AddToCartButtonProps) {
 			});
 
 			await addToCart(selectedVariant.id, quantity);
-
-			// Refresh to sync cart from server
-			router.refresh();
 
 			// Reset quantity after add
 			setQuantity(1);

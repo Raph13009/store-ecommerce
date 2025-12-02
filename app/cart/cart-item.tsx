@@ -3,7 +3,6 @@
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { removeFromCart, setCartQuantity } from "@/app/cart/actions";
 import { type CartLineItem, useCart } from "@/app/cart/cart-context";
@@ -14,7 +13,6 @@ type CartItemProps = {
 };
 
 export function CartItem({ item }: CartItemProps) {
-	const router = useRouter();
 	const { dispatch, closeCart } = useCart();
 	const [, startTransition] = useTransition();
 
@@ -29,7 +27,6 @@ export function CartItem({ item }: CartItemProps) {
 		startTransition(async () => {
 			dispatch({ type: "REMOVE", variantId: productVariant.id });
 			await removeFromCart(productVariant.id);
-			router.refresh();
 		});
 	};
 
@@ -37,7 +34,6 @@ export function CartItem({ item }: CartItemProps) {
 		startTransition(async () => {
 			dispatch({ type: "INCREASE", variantId: productVariant.id });
 			await setCartQuantity(productVariant.id, quantity + 1);
-			router.refresh();
 		});
 	};
 
@@ -49,7 +45,6 @@ export function CartItem({ item }: CartItemProps) {
 		startTransition(async () => {
 			dispatch({ type: "DECREASE", variantId: productVariant.id });
 			await setCartQuantity(productVariant.id, quantity - 1);
-			router.refresh();
 		});
 	};
 
