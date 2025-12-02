@@ -242,7 +242,6 @@ export async function addToCart(variantId: string, quantity = 1) {
 
 	console.log("📦 [LIB_CART] Fetching updated cart directly with cartId:", cartId);
 	// Fetch cart directly using the cartId we just used, don't use getCart() which might create a new cart
-	const supabase = await createServerClient();
 	const { data: directCart, error: directError } = await supabase.from("carts").select("*").eq("id", cartId).single();
 	
 	if (directError || !directCart) {
