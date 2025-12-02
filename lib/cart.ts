@@ -52,16 +52,45 @@ async function getOrCreateCartId(): Promise<string | null> {
 
 export async function getCart(): Promise<CartWithItems | null> {
 	console.log("🛍️ [GET_CART] Fetching cart...");
-	const cartId = await getOrCreateCartId();
-	console.log("🛍️ [GET_CART] Cart ID:", cartId);
-	if (!cartId) {
-		console.warn("⚠️ [GET_CART] No cart ID, returning null");
+	const cookieStore = await cookies();
+	const existingCartId = cookieStore.get("cartId")?.value;
+	console.log("🛍️ [GET_CART] Cart ID from cookie:", existingCartId);
+	
+	if (!existingCartId) {
+		console.warn("⚠️ [GET_CART] No cart ID in cookie, returning null");
 		return null;
 	}
 
 	const supabase = await createServerClient();
 
-	const { data: cart, error: cartError } = await supabase.from("carts").select("*").eq("id", cartId).single();
+	const { data: cart, error: cartError } = await supabase.from("carts").select("*").eq("id", existingCartId).single();
+
+	// If cart doesn't exist (PGRST116 = 0 rows), create a new one and update cookie
+	if (cartError && (cartError.code === "PGRST116" || cartError.message?.includes("0 rows"))) {
+		console.warn("⚠️ [GET_CART] Cart not found in database (cookie ID:", existingCartId, "), creating new cart...");
+		const { data: newCart, error: createError } = await supabase.from("carts").insert({}).select().single();
+		
+		if (createError || !newCart) {
+			console.error("❌ [GET_CART] Error creating new cart:", createError);
+			return null;
+		}
+		
+		console.log("✅ [GET_CART] New cart created:", newCart.id);
+		cookieStore.set("cartId", newCart.id, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			sameSite: "lax",
+			path: "/",
+			maxAge: 60 * 60 * 24 * 30, // 30 days
+		});
+		
+		// Return empty cart
+		console.log("🛍️ [GET_CART] Returning empty new cart");
+		return {
+			...newCart,
+			items: [],
+		};
+	}
 
 	if (cartError || !cart) {
 		console.error("❌ [GET_CART] Error fetching cart:", cartError);
@@ -81,7 +110,7 @@ export async function getCart(): Promise<CartWithItems | null> {
 			)
 		`,
 		)
-		.eq("cart_id", cartId);
+		.eq("cart_id", existingCartId);
 
 	if (itemsError) {
 		console.error("❌ [GET_CART] Error fetching cart items:", itemsError);
@@ -119,13 +148,57 @@ export async function getCart(): Promise<CartWithItems | null> {
 
 export async function addToCart(variantId: string, quantity = 1) {
 	console.log("📦 [LIB_CART] addToCart - variantId:", variantId, "quantity:", quantity);
-	const cartId = await getOrCreateCartId();
-	console.log("📦 [LIB_CART] Cart ID:", cartId);
+	
+	// Use getOrCreateCartId but also verify cart exists
+	const cookieStore = await cookies();
+	let cartId = cookieStore.get("cartId")?.value;
+	
 	if (!cartId) {
-		console.error("❌ [LIB_CART] No cart ID available");
-		return { success: false, cart: null };
+		console.log("📦 [LIB_CART] No cart ID in cookie, creating new cart...");
+		const supabase = await createServerClient();
+		const { data, error } = await supabase.from("carts").insert({}).select().single();
+		
+		if (error || !data) {
+			console.error("❌ [LIB_CART] Error creating cart:", error);
+			return { success: false, cart: null };
+		}
+		
+		cartId = data.id;
+		cookieStore.set("cartId", cartId, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			sameSite: "lax",
+			path: "/",
+			maxAge: 60 * 60 * 24 * 30, // 30 days
+		});
+		console.log("✅ [LIB_CART] New cart created:", cartId);
+	} else {
+		// Verify cart exists
+		const supabase = await createServerClient();
+		const { data: cart, error: cartError } = await supabase.from("carts").select("*").eq("id", cartId).single();
+		
+		if (cartError && (cartError.code === "PGRST116" || cartError.message?.includes("0 rows"))) {
+			console.warn("⚠️ [LIB_CART] Cart ID in cookie doesn't exist, creating new cart...");
+			const { data: newCart, error: createError } = await supabase.from("carts").insert({}).select().single();
+			
+			if (createError || !newCart) {
+				console.error("❌ [LIB_CART] Error creating new cart:", createError);
+				return { success: false, cart: null };
+			}
+			
+			cartId = newCart.id;
+			cookieStore.set("cartId", cartId, {
+				httpOnly: true,
+				secure: process.env.NODE_ENV === "production",
+				sameSite: "lax",
+				path: "/",
+				maxAge: 60 * 60 * 24 * 30, // 30 days
+			});
+			console.log("✅ [LIB_CART] New cart created:", cartId);
+		}
 	}
-
+	
+	console.log("📦 [LIB_CART] Using cart ID:", cartId);
 	const supabase = await createServerClient();
 
 	// Check if item already exists in cart
