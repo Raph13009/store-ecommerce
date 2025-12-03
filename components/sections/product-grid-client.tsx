@@ -77,9 +77,9 @@ export function ProductGridClient({ products: initialProducts }: ProductGridClie
 							)}
 							{!isSoldOut && (
 								<div className="absolute top-3 left-3 z-10">
-									<div className="bg-gradient-to-r from-[#2c2c2c]/95 to-[#1a1a1a]/95 backdrop-blur-sm border border-[#3a3a3a]/50 rounded-full px-3 py-1.5 shadow-lg">
-										<span className="text-[10px] sm:text-xs font-semibold text-white tracking-wider uppercase">
-											Liquidation
+									<div className="bg-[#dc2626]/90 backdrop-blur-sm rounded-sm px-2.5 py-1 border border-[#dc2626]/30">
+										<span className="text-[10px] sm:text-xs font-medium text-white tracking-wide">
+											Prix réduit
 										</span>
 									</div>
 								</div>
@@ -98,6 +98,9 @@ export function ProductGridClient({ products: initialProducts }: ProductGridClie
 							>
 								{product.name}
 							</h3>
+							<p className="text-xs text-muted-foreground font-light">
+								Dorure 18K sur acier 316L
+							</p>
 							<div className={`text-base ${isSoldOut ? "text-muted-foreground" : "text-foreground"}`}>
 								{priceDisplay}
 							</div>
