@@ -101,7 +101,7 @@ export function CartSidebar() {
 										<div className="flex items-center justify-between text-sm">
 											<span style={{ color: "#2A2A2A" }}>Prix initial du bijou</span>
 											<span className="line-through" style={{ color: "#A7A7A7" }}>
-												{formatMoney({ amount: (subtotal * BigInt(160)) / BigInt(100), currency, locale })}
+												{formatMoney({ amount: (subtotal * BigInt(400)) / BigInt(100), currency, locale })}
 											</span>
 										</div>
 										<div className="flex items-center justify-between text-sm">

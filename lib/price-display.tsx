@@ -7,12 +7,12 @@ const locale = "fr-FR";
 export const formatMoney = formatMoneyBase;
 
 /**
- * Calculate original price (60% higher than current price)
+ * Calculate original price (300% higher than current price)
  */
 export function calculateOriginalPrice(currentPrice: bigint | number): bigint {
 	const current = typeof currentPrice === "bigint" ? currentPrice : BigInt(currentPrice);
-	// Original price = current price * 1.60
-	return (current * BigInt(160)) / BigInt(100);
+	// Original price = current price * 4.00
+	return (current * BigInt(400)) / BigInt(100);
 }
 
 /**
