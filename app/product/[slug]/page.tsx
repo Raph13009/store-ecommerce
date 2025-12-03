@@ -4,7 +4,6 @@ import { AddToCartButton } from "@/app/product/[slug]/add-to-cart-button";
 import { ImageGallery } from "@/app/product/[slug]/image-gallery";
 import { ProductFeatures } from "@/app/product/[slug]/product-features";
 import { ProductReviews } from "@/app/product/[slug]/product-reviews";
-import { ProductMobileBackButton } from "@/components/product-mobile-back-button";
 import { formatPriceRangeWithOriginal, formatPriceWithOriginal } from "@/lib/price-display";
 import { getProductBySlug } from "@/lib/products";
 
@@ -41,9 +40,6 @@ const ProductDetails = async ({ params }: { params: Promise<{ slug: string }> })
 
 	return (
 		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-			{/* Mobile-only back button */}
-			<ProductMobileBackButton />
-
 			<div className="lg:grid lg:grid-cols-2 lg:gap-16">
 				{/* Left: Image Gallery (sticky on desktop) */}
 				<ImageGallery images={allImages} productName={product.name} />

@@ -1,7 +1,8 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -12,6 +13,7 @@ type ImageGalleryProps = {
 };
 
 export function ImageGallery({ images, productName }: ImageGalleryProps) {
+	const router = useRouter();
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const [isZoomed, setIsZoomed] = useState(false);
 
@@ -26,6 +28,15 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
 	if (images.length === 0) {
 		return (
 			<div className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
+				<button
+					type="button"
+					onClick={() => router.back()}
+					className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-2 group"
+					aria-label="Retour"
+				>
+					<ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+					<span className="font-medium">Retour</span>
+				</button>
 				<div className="aspect-square bg-secondary rounded-2xl flex items-center justify-center">
 					<p className="text-muted-foreground">Aucune image disponible</p>
 				</div>
@@ -35,6 +46,17 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
 
 	return (
 		<div className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
+			{/* Back Button - Modern arrow above image */}
+			<button
+				type="button"
+				onClick={() => router.back()}
+				className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-2 group"
+				aria-label="Retour"
+			>
+				<ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+				<span className="font-medium">Retour</span>
+			</button>
+
 			{/* Main Image */}
 			<div className="group relative aspect-square overflow-hidden rounded-2xl bg-secondary">
 				<Image

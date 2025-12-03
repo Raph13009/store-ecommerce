@@ -91,6 +91,15 @@ export async function ProductGrid({
 										className="object-cover opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:brightness-110 absolute inset-0"
 									/>
 								)}
+								{!isSoldOut && (
+									<div className="absolute top-3 left-3 z-10">
+										<div className="bg-gradient-to-r from-[#2c2c2c]/95 to-[#1a1a1a]/95 backdrop-blur-sm border border-[#3a3a3a]/50 rounded-full px-3 py-1.5 shadow-lg">
+											<span className="text-[10px] sm:text-xs font-semibold text-white tracking-wider uppercase">
+												Liquidation
+											</span>
+										</div>
+									</div>
+								)}
 								{isSoldOut && (
 									<div className="absolute inset-0 bg-background/40 flex items-center justify-center">
 										<span className="bg-background/90 text-foreground px-4 py-2 rounded-full text-xs font-medium tracking-wide">
