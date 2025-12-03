@@ -131,7 +131,12 @@ export function AddToCartButton({ variants, product }: AddToCartButtonProps) {
 	const shouldShowSizeGuide = isRing || hasSizeVariants;
 
 	return (
-		<div className="space-y-8">
+		<div className="space-y-6">
+			{/* Urgency Block */}
+			<div className="rounded-[10px] px-3 py-2" style={{ background: "#FFF7E8", color: "#8C6B3B" }}>
+				<p className="text-sm font-medium">Stock limité : quelques pièces restantes</p>
+			</div>
+
 			{/* Variant Selector - only shows if multiple variants exist */}
 			{variants.length > 1 && (
 				<div className="space-y-3">
@@ -155,7 +160,31 @@ export function AddToCartButton({ variants, product }: AddToCartButtonProps) {
 
 			<QuantitySelector quantity={quantity} onQuantityChange={setQuantity} disabled={isPending} />
 
-			<div className="space-y-2">
+			{/* Trust Section */}
+			<div className="pt-2">
+				<h3 className="text-base font-medium text-foreground mb-3">Pourquoi vous allez l'adorer</h3>
+				<ul className="space-y-2">
+					<li className="flex items-start gap-2 text-sm text-muted-foreground">
+						<span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground/40 shrink-0" />
+						<span>Ne noircit pas, résiste à l'eau</span>
+					</li>
+					<li className="flex items-start gap-2 text-sm text-muted-foreground">
+						<span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground/40 shrink-0" />
+						<span>Dorure 18K durable</span>
+					</li>
+					<li className="flex items-start gap-2 text-sm text-muted-foreground">
+						<span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground/40 shrink-0" />
+						<span>Confortable pour un port quotidien</span>
+					</li>
+					<li className="flex items-start gap-2 text-sm text-muted-foreground">
+						<span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground/40 shrink-0" />
+						<span>Design minimal et élégant</span>
+					</li>
+				</ul>
+			</div>
+
+			{/* CTA Block */}
+			<div className="pt-6 space-y-2">
 				<form onSubmit={handleSubmit}>
 					<button
 						type="submit"
@@ -182,8 +211,6 @@ export function AddToCartButton({ variants, product }: AddToCartButtonProps) {
 					);
 				})()}
 			</div>
-
-			<TrustBadges />
 		</div>
 	);
 }

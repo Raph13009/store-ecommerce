@@ -25,10 +25,10 @@ export function formatPriceWithOriginal(amount: bigint | number) {
 	const originalFormatted = formatMoney({ amount: original, currency, locale });
 
 	return (
-		<span className="inline-flex items-baseline gap-2">
-			<span className="font-semibold">{currentFormatted}</span>
-			<small className="text-muted-foreground line-through text-sm font-normal">{originalFormatted}</small>
-		</span>
+		<div className="inline-flex flex-col gap-1">
+			<span className="text-3xl font-bold text-foreground">{currentFormatted}</span>
+			<span className="text-lg line-through font-normal" style={{ color: "#A0A0A0" }}>{originalFormatted}</span>
+		</div>
 	);
 }
 
@@ -48,14 +48,14 @@ export function formatPriceRangeWithOriginal(minPrice: bigint, maxPrice: bigint)
 	}
 
 	return (
-		<span className="inline-flex items-baseline gap-2">
-			<span className="font-semibold">
+		<div className="inline-flex flex-col gap-1">
+			<span className="text-3xl font-bold text-foreground">
 				{minFormatted} - {maxFormatted}
 			</span>
-			<small className="text-muted-foreground line-through text-sm font-normal">
+			<span className="text-lg line-through font-normal" style={{ color: "#A0A0A0" }}>
 				{minOriginalFormatted} - {maxOriginalFormatted}
-			</small>
-		</span>
+			</span>
+		</div>
 	);
 }
 

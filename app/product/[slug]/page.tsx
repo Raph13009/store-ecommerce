@@ -45,33 +45,42 @@ const ProductDetails = async ({ params }: { params: Promise<{ slug: string }> })
 				<ImageGallery images={allImages} productName={product.name} />
 
 				{/* Right: Product Details */}
-				<div className="mt-8 lg:mt-0 space-y-8">
-					{/* Title, Price, Description */}
-					<div className="space-y-4">
-						<h1 className="text-4xl font-medium tracking-tight text-foreground lg:text-5xl text-balance">
-							{product.name}
-						</h1>
-						<div className="text-2xl tracking-tight">{priceDisplay}</div>
-						{product.summary && <p className="text-muted-foreground leading-relaxed">{product.summary}</p>}
-					</div>
+				<div className="mt-8 lg:mt-0">
+					{/* Title */}
+					<h1 className="text-4xl font-medium tracking-tight text-foreground lg:text-5xl text-balance mb-3">
+						{product.name}
+					</h1>
+
+					{/* Premium Trust Line */}
+					<p className="text-sm font-medium mb-4" style={{ color: "#6B6B6B" }}>
+						Acier 316L doré à l'or fin 18K • Waterproof • Hypoallergénique
+					</p>
+
+					{/* Price */}
+					<div className="mb-6">{priceDisplay}</div>
+
+					{/* Description */}
+					{product.summary && <p className="text-muted-foreground leading-relaxed mb-6">{product.summary}</p>}
 
 					{/* Variant Selector, Quantity, Add to Cart, Trust Badges */}
-					<AddToCartButton
-						variants={product.variants.map((v) => ({
-							id: v.id,
-							price: v.price.toString(),
-							images: v.images,
-							name: v.name,
-							stock: v.stock,
-							attributes: v.attributes,
-						}))}
-						product={{
-							id: product.id,
-							name: product.name,
-							slug: product.slug,
-							images: product.images ?? [],
-						}}
-					/>
+					<div className="mt-8">
+						<AddToCartButton
+							variants={product.variants.map((v) => ({
+								id: v.id,
+								price: v.price.toString(),
+								images: v.images,
+								name: v.name,
+								stock: v.stock,
+								attributes: v.attributes,
+							}))}
+							product={{
+								id: product.id,
+								name: product.name,
+								slug: product.slug,
+								images: product.images ?? [],
+							}}
+						/>
+					</div>
 				</div>
 			</div>
 
