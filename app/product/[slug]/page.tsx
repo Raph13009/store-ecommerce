@@ -37,12 +37,14 @@ const ProductDetails = async ({ params }: { params: Promise<{ slug: string }> })
 		...(product.images ?? []),
 		...product.variants.flatMap((v) => v.images ?? []).filter((img) => !(product.images ?? []).includes(img)),
 	];
+	const slugsWithThreeImages = ["bague-onde-dor", "collier-emeraude-dor"];
+	const displayedImages = slugsWithThreeImages.includes(slug) ? allImages.slice(0, 3) : allImages;
 
 	return (
 		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 			<div className="lg:grid lg:grid-cols-2 lg:gap-16">
 				{/* Left: Image Gallery (sticky on desktop) */}
-				<ImageGallery images={allImages} productName={product.name} />
+				<ImageGallery images={displayedImages} productName={product.name} />
 
 				{/* Right: Product Details */}
 				<div className="mt-8 lg:mt-0">

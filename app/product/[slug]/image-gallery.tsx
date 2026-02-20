@@ -16,12 +16,17 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
 	const router = useRouter();
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const [isZoomed, setIsZoomed] = useState(false);
+	const [isMainImageLoaded, setIsMainImageLoaded] = useState(false);
+
+	const selectedImage = images[selectedIndex];
 
 	const handlePrevious = () => {
+		setIsMainImageLoaded(false);
 		setSelectedIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
 	};
 
 	const handleNext = () => {
+		setIsMainImageLoaded(false);
 		setSelectedIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
 	};
 
@@ -59,14 +64,21 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
 
 			{/* Main Image */}
 			<div className="group relative aspect-square overflow-hidden rounded-2xl bg-secondary">
+				{!isMainImageLoaded && (
+					<div className="absolute inset-0 z-10 animate-pulse bg-muted/60" aria-hidden />
+				)}
 				<Image
-					src={images[selectedIndex]}
+					src={selectedImage}
 					alt={`${productName} - Vue ${selectedIndex + 1}`}
 					fill
+					sizes="(max-width: 1024px) 100vw, 50vw"
+					quality={60}
 					className={cn(
 						"object-cover transition-all duration-500 group-hover:brightness-110",
+						!isMainImageLoaded && "opacity-0",
 						isZoomed && "scale-150 cursor-zoom-out",
 					)}
+					onLoad={() => setIsMainImageLoaded(true)}
 					onClick={() => setIsZoomed(!isZoomed)}
 					priority
 				/>
@@ -122,7 +134,10 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
 						<button
 							key={image}
 							type="button"
-							onClick={() => setSelectedIndex(index)}
+							onClick={() => {
+								setIsMainImageLoaded(false);
+								setSelectedIndex(index);
+							}}
 							className={cn(
 								"relative aspect-square w-20 shrink-0 overflow-hidden rounded-lg transition-all duration-200",
 								selectedIndex === index
@@ -134,6 +149,9 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
 								src={image}
 								alt={`${productName} miniature ${index + 1}`}
 								fill
+								sizes="80px"
+								quality={40}
+								loading="lazy"
 								className="object-cover transition-all duration-300 hover:brightness-110"
 							/>
 						</button>

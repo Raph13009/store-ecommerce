@@ -49,7 +49,7 @@ export async function ProductGrid({
 			</div>
 
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-				{displayProducts.map((product) => {
+				{displayProducts.map((product, index) => {
 					const variants = product.variants ?? [];
 					const prices = variants.map((v) => BigInt(v.price));
 					const minPrice = prices.length > 0 ? prices.reduce((a, b) => (a < b ? a : b)) : BigInt(0);
@@ -77,6 +77,9 @@ export async function ProductGrid({
 										alt={product.name}
 										fill
 										sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+										quality={60}
+										loading={index < 2 ? undefined : "lazy"}
+										priority={index < 2}
 										className={`object-cover transition-all duration-500 ${
 											isSoldOut ? "" : "group-hover:brightness-110"
 										}`}
@@ -88,6 +91,8 @@ export async function ProductGrid({
 										alt={`${product.name} - vue alternative`}
 										fill
 										sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+										quality={45}
+										loading="lazy"
 										className="object-cover opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:brightness-110 absolute inset-0"
 									/>
 								)}

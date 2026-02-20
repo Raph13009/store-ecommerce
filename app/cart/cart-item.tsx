@@ -76,7 +76,17 @@ export function CartItem({ item }: CartItemProps) {
 				onClick={closeCart}
 				className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-secondary"
 			>
-				{image && <Image src={image} alt={product.name} fill className="object-cover" sizes="96px" />}
+				{image && (
+					<Image
+						src={image}
+						alt={product.name}
+						fill
+						className="object-cover"
+						sizes="96px"
+						quality={55}
+						loading="lazy"
+					/>
+				)}
 			</Link>
 
 			{/* Product Details */}

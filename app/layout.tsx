@@ -139,9 +139,10 @@ async function CartProviderWrapper({ children }: { children: React.ReactNode }) 
 										alt="La Maison de Lola"
 										width={250}
 										height={100}
+										sizes="(max-width: 768px) 160px, 250px"
 										className="h-20 w-auto object-contain"
 										priority
-										unoptimized
+										quality={85}
 										style={{ objectFit: "contain" }}
 									/>
 								</Link>

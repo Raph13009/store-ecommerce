@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { formatPriceRangeWithOriginal, formatPriceWithOriginal } from "@/lib/price-display";
 import { isProductSoldOut } from "@/lib/products";
@@ -14,10 +15,10 @@ type ProductGridClientProps = {
 };
 
 export function ProductGridClient({ products: initialProducts }: ProductGridClientProps) {
+	const router = useRouter();
 	const [products, setProducts] = useState(initialProducts);
 
 	useEffect(() => {
-		// Listen for filter changes
 		const handleFilter = (event: CustomEvent<ProductWithVariants[]>) => {
 			setProducts(event.detail);
 		};
@@ -31,7 +32,7 @@ export function ProductGridClient({ products: initialProducts }: ProductGridClie
 
 	return (
 		<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-			{products.map((product) => {
+			{products.map((product, index) => {
 				const variants = product.variants ?? [];
 				const prices = variants.map((v) => BigInt(v.price));
 				const minPrice = prices.length > 0 ? prices.reduce((a, b) => (a < b ? a : b)) : BigInt(0);
@@ -49,9 +50,12 @@ export function ProductGridClient({ products: initialProducts }: ProductGridClie
 				const primaryImage = allImages[0];
 				const secondaryImage = allImages[1];
 				const isSoldOut = isProductSoldOut(variants);
+				const productHref = `/product/${product.slug}`;
 
 				const productCard = (
-					<div className={isSoldOut ? "opacity-60" : "group"}>
+					<div
+						className={`transition-transform duration-300 ${isSoldOut ? "opacity-60" : "group hover:scale-[1.01]"}`}
+					>
 						<div className="relative aspect-square bg-secondary rounded-2xl overflow-hidden mb-4">
 							{primaryImage && (
 								<Image
@@ -59,10 +63,12 @@ export function ProductGridClient({ products: initialProducts }: ProductGridClie
 									alt={product.name}
 									fill
 									sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+									quality={60}
 									className={`object-cover transition-all duration-500 ${
 										isSoldOut ? "" : "group-hover:brightness-110"
 									}`}
-									loading="lazy"
+									loading={index < 2 ? undefined : "lazy"}
+									priority={index < 2}
 								/>
 							)}
 							{secondaryImage && !isSoldOut && (
@@ -71,6 +77,7 @@ export function ProductGridClient({ products: initialProducts }: ProductGridClie
 									alt={`${product.name} - vue alternative`}
 									fill
 									sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+									quality={45}
 									className="object-cover opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:brightness-110 absolute inset-0"
 									loading="lazy"
 								/>
@@ -98,9 +105,7 @@ export function ProductGridClient({ products: initialProducts }: ProductGridClie
 							>
 								{product.name}
 							</h3>
-							<p className="text-xs text-muted-foreground font-light">
-								Dorure 18K sur acier 316L
-							</p>
+							<p className="text-xs text-muted-foreground font-light">Dorure 18K sur acier 316L</p>
 							<div className={`text-base ${isSoldOut ? "text-muted-foreground" : "text-foreground"}`}>
 								{priceDisplay}
 							</div>
@@ -117,7 +122,13 @@ export function ProductGridClient({ products: initialProducts }: ProductGridClie
 				}
 
 				return (
-					<Link key={product.id} href={`/product/${product.slug}`}>
+					<Link
+						key={product.id}
+						href={productHref}
+						onMouseEnter={() => {
+							router.prefetch(productHref);
+						}}
+					>
 						{productCard}
 					</Link>
 				);

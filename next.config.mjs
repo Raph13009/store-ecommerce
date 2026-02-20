@@ -9,10 +9,14 @@ const nextConfig = {
 		typedEnv: true,
 	},
 	images: {
-		// Disable image optimization for external images to avoid hostname issues
-		// This allows all external domains but images won't be optimized by Next.js
-		unoptimized: true,
-		// Keep remotePatterns for future use if we re-enable optimization
+		// Use Next.js optimizer to serve modern formats and responsive sizes.
+		formats: ["image/avif", "image/webp"],
+		minimumCacheTTL: 60 * 60 * 24 * 30,
+		// Next.js 16 requires explicit quality allowlist for non-75 values.
+		qualities: [35, 40, 45, 55, 60, 75, 80, 85],
+		// Keep generated srcset variants tight to avoid unnecessary heavy transforms.
+		deviceSizes: [360, 640, 768, 1024, 1280],
+		imageSizes: [64, 80, 96, 128, 256, 384],
 		remotePatterns: [
 			{ hostname: "*.blob.vercel-storage.com" },
 			{

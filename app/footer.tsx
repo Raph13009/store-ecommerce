@@ -14,8 +14,9 @@ export function Footer() {
 								alt="La Maison de Lola"
 								width={200}
 								height={80}
+								sizes="200px"
 								className="h-16 w-auto object-contain"
-								unoptimized
+								quality={80}
 								style={{ objectFit: "contain" }}
 							/>
 						</Link>
