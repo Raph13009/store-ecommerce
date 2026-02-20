@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import Script from "next/script";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { type Cart, type CartLineItem, CartProvider } from "@/app/cart/cart-context";
 import { CartSidebar } from "@/app/cart/cart-sidebar";
@@ -123,6 +124,7 @@ async function getInitialCart() {
 }
 
 async function CartProviderWrapper({ children }: { children: React.ReactNode }) {
+	await connection();
 	const { cart, cartId } = await getInitialCart();
 
 	return (

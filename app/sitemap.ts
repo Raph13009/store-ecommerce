@@ -1,7 +1,9 @@
 import type { MetadataRoute } from "next";
+import { connection } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+	await connection();
 	const baseUrl = process.env.NEXT_PUBLIC_ROOT_URL || "https://atelierlola.fr";
 
 	// Pages statiques
